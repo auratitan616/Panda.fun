@@ -287,7 +287,10 @@ function toEpisode(item: any): Episode {
     id: String(item.id || item.providerId || `episode-${item.season || 1}-${item.number || 1}`),
     number: Number(item.number || 1),
     title: item.title || undefined,
-    image: normalizeMediaImageUrl(item.image?.original || item.image?.medium || item.image || item.still_path || item.stillPath, item.source === 'tvmaze' ? 'tvmaze' : 'tmdb') || undefined,
+    image: normalizeMediaImageUrl(
+      item.image?.original || item.image?.medium || (typeof item.image === 'string' ? item.image : null) || item.still_path || item.stillPath,
+      item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'
+    ) || undefined,
     duration: item.runtime || undefined,
     playable: true,
     seasonNumber: Number(item.season || 1),
@@ -585,7 +588,7 @@ export const api = {
           synopsis: ep.synopsis || ep.overview || '',
           image: optimizeImageUrl(
             normalizeMediaImageUrl(
-              ep.image?.original || ep.image?.medium || ep.image || ep.still_path || ep.stillPath,
+              ep.image?.original || ep.image?.medium || (typeof ep.image === 'string' ? ep.image : null) || ep.still_path || ep.stillPath,
               media.provider === 'tvmaze' ? 'tvmaze' : 'tmdb'
             ),
             'w500'
