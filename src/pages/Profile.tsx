@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PandaImage } from '../components/ui/PandaImage';
+import { DEFAULT_POSTER } from '../types';
 import {
   ArrowLeft, ArrowRight, Check, Compass, Drama, Edit3, Fingerprint, Ghost, History,
   Heart, Library, Laugh, LogIn, LogOut, Mail, Plus, Rocket, Search,
