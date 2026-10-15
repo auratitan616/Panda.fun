@@ -1,7 +1,7 @@
 import type { AnimeDetails, AnimeItem, Episode, AnimeSeasonItem, MediaTrailer } from '../types';
 import { slugifyTitle } from './slug';
 import { trackApiFailure } from './analytics';
-import { optimizeImageUrl } from './mediaImages';
+import { normalizeMediaImageUrl, optimizeImageUrl } from './mediaImages';
 
 export type MovieApiMedia = {
   id: string;
@@ -246,8 +246,11 @@ function toAnimeItem(item: MovieApiMedia): AnimeItem {
     overview?: string;
   };
   const title = item.title || raw.name || raw.original_name || 'Untitled';
-  const poster = item.poster || (raw.poster_path ? 'https://image.tmdb.org/t/p/w500' + raw.poster_path : null);
-  const backdrop = item.backdrop || (raw.backdrop_path ? 'https://image.tmdb.org/t/p/w1280' + raw.backdrop_path : null);
+  const imageProvider = item.source === 'tvmaze' ? 'tvmaze' : 'tmdb';
+  const poster = normalizeMediaImageUrl(item.poster, imageProvider)
+    || normalizeMediaImageUrl(raw.poster_path, imageProvider);
+  const backdrop = normalizeMediaImageUrl(item.backdrop, imageProvider)
+    || normalizeMediaImageUrl(raw.backdrop_path, imageProvider);
   const releaseDate = item.releaseDate || raw.release_date || raw.first_air_date || undefined;
   const rating = item.rating ?? (Number.isFinite(Number(raw.vote_average)) ? Number(raw.vote_average) : undefined);
   const type = item.type === 'movie' ? 'movie' : 'series';
@@ -255,9 +258,9 @@ function toAnimeItem(item: MovieApiMedia): AnimeItem {
   return {
     id: item.id,
     title,
-    image: optimizeImageUrl(poster, 'w342') || '',
-    cover: backdrop || '',
-    banner: backdrop || '',
+    image: optimizeImageUrl(poster, 'w342') || poster || '',
+    cover: optimizeImageUrl(backdrop, 'w1280') || backdrop || '',
+    banner: optimizeImageUrl(backdrop, 'w1280') || backdrop || '',
     rating,
     type: item.type,
     releaseDate,
@@ -271,7 +274,6 @@ function toAnimeItem(item: MovieApiMedia): AnimeItem {
 function toDetails(item: MovieApiMedia): AnimeDetails {
   return {
     ...toAnimeItem(item),
-    image: item.poster || '',
     episodes: [],
     seasons: [],
     description: item.overview || undefined,
@@ -285,7 +287,7 @@ function toEpisode(item: any): Episode {
     id: String(item.id || item.providerId || `episode-${item.season || 1}-${item.number || 1}`),
     number: Number(item.number || 1),
     title: item.title || undefined,
-    image: item.image?.original || item.image?.medium || item.image || undefined,
+    image: normalizeMediaImageUrl(item.image?.original || item.image?.medium || item.image || item.still_path || item.stillPath, item.source === 'tvmaze' ? 'tvmaze' : 'tmdb') || undefined,
     duration: item.runtime || undefined,
     playable: true,
     seasonNumber: Number(item.season || 1),
@@ -581,7 +583,13 @@ export const api = {
         .map((ep) => ({
           id: String(ep.id), number: Number(ep.number || 1), title: ep.title || `Episode ${ep.number || 1}`,
           synopsis: ep.synopsis || ep.overview || '',
-          image: optimizeImageUrl(ep.image?.original || ep.image?.medium || ep.image || '', 'w500') || '',
+          image: optimizeImageUrl(
+            normalizeMediaImageUrl(
+              ep.image?.original || ep.image?.medium || ep.image || ep.still_path || ep.stillPath,
+              media.provider === 'tvmaze' ? 'tvmaze' : 'tmdb'
+            ),
+            'w500'
+          ) || '',
           duration: Number(ep.runtime || ep.duration || 0) || undefined,
           rating: Number(ep.rating ?? ep.vote_average ?? 0) || undefined
         }))
