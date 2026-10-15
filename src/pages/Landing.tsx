@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { ChevronDown, Play, Sparkles } from 'lucide-react';
+import { PandaImage } from '../components/ui/PandaImage';
+import { DEFAULT_BANNER } from '../types';
 import { motion } from 'motion/react';
 import { KinomaLogo } from '../components/ui/KinomaLogo';
 import { updateSEO } from '../lib/seo';
@@ -56,7 +58,7 @@ export function Landing() {
         <section className="kinoma-welcome__hero" aria-labelledby="welcome-title">
           <div className="kinoma-welcome__art">
             <motion.div initial={{ opacity: 0, y: 30, rotate: -3 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} className="kinoma-welcome__art-frame">
-              <div className="kinoma-welcome__art-glow" /><img src={WELCOME_IMAGE_URL} alt="Panda.fun streaming artwork" fetchPriority="high" decoding="async" referrerPolicy="no-referrer" /><div className="kinoma-welcome__art-vignette" />
+              <div className="kinoma-welcome__art-glow" /><PandaImage src={WELCOME_IMAGE_URL} fallbackSrc={DEFAULT_BANNER} size="w1280" alt="Panda.fun streaming artwork" fetchPriority="high" decoding="async" loading="eager" className="w-full h-full object-cover" /><div className="kinoma-welcome__art-vignette" />
             </motion.div>
           </div>
           <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.75, delay: 0.15, ease: [0.16, 1, 0.3, 1] }} className="kinoma-welcome__copy">
