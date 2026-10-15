@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { buildMediaImageCandidates, type MediaImageProvider, type MediaImageSize } from '../../lib/mediaImages';
 
 export interface PandaImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'onError' | 'onLoad'> {
@@ -30,6 +30,8 @@ export function PandaImage({
 }: PandaImageProps) {
   const candidates = buildMediaImageCandidates(src, fallbackSrc, size, provider);
   const sourceKey = candidates.join('\u001f');
+  const currentKeyRef = useRef(sourceKey);
+  currentKeyRef.current = sourceKey;
   const [progress, setProgress] = useState<{ key: string; index: number; exhausted: boolean }>({
     key: '',
     index: 0,
@@ -56,9 +58,9 @@ export function PandaImage({
         onLoad?.(event);
       }}
       onError={(event) => {
+        if (currentKeyRef.current !== sourceKey) return;
         onError?.(event);
         setProgress((previous) => {
-          if (previous.key !== sourceKey && previous.key !== '') return previous;
           if (current.index < candidates.length - 1) {
             return { key: sourceKey, index: current.index + 1, exhausted: false };
           }
