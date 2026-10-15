@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Play, Info, Star, Plus, Check, Calendar, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnimeItem, DEFAULT_BANNER } from '../../../types';
+import { PandaImage } from '../PandaImage';
 import { libraryManager } from '../../../lib/library';
 import { historyUtil, HistoryItem } from '../../../lib/history';
 import { buildDetailsHref, buildWatchHref } from '../../../lib/mediaRoute';
@@ -115,12 +116,14 @@ export function ModernHero({ items }: ModernHeroProps) {
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="absolute inset-0 z-0"
         >
-          <img
-            src={currentItem.banner || currentItem.cover || currentItem.image || DEFAULT_BANNER}
+          <PandaImage
+            src={currentItem.banner || currentItem.cover || currentItem.image || null}
+            fallbackSrc={currentItem.image || DEFAULT_BANNER}
+            size="w1280"
             alt={title}
             className="w-full h-full object-cover object-center opacity-75 brightness-[0.72] saturate-[0.72] scale-[1.04]"
             loading="eager"
-            referrerPolicy="no-referrer"
+            fetchPriority="high"
           />
         </motion.div>
       </AnimatePresence>
