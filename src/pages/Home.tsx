@@ -607,9 +607,6 @@ function HomeContent({
   const featuredBackdrop = featured?.backdrop
     ? (optimizeImageUrl(featured.backdrop, 'w1280') || featured.backdrop)
     : null;
-  const featuredBackdropSmall = featured?.backdrop
-    ? (optimizeImageUrl(featured.backdrop, 'w780') || featured.backdrop)
-    : null;
   const topTen = useMemo(() => [...trending, ...popularMovies, ...popularTv].filter((item, index, list) => item?.id && list.findIndex(candidate => candidate.id === item.id) === index).slice(0, 10), [trending, popularMovies, popularTv]);
 
   const toggleFeaturedList = () => {
