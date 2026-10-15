@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { api } from '../../lib/api';
 import { DEFAULT_POSTER } from '../../types';
 import { buildDetailsHref } from '../../lib/mediaRoute';
+import { PandaImage } from './PandaImage';
 
 export function SearchBar() {
   const [query, setQuery] = useState('');
@@ -117,7 +118,7 @@ export function SearchBar() {
                     }}
                     className="flex items-center gap-3 p-2.5 mx-2 rounded-lg hover:bg-[#252533] cursor-pointer transition-colors group/item"
                   >
-                    <img src={item.image || DEFAULT_POSTER} alt="cover" className="w-10 h-14 object-cover rounded-md shadow-sm group-hover/item:scale-105 transition-transform" />
+                    <PandaImage src={item.image} fallbackSrc={DEFAULT_POSTER} size="w342" alt="cover" className="w-10 h-14 object-cover rounded-md shadow-sm group-hover/item:scale-105 transition-transform" />
                     <div className="flex flex-col min-w-0">
                       <span className="text-sm font-semibold text-gray-200 group-hover/item:text-[#c084fc] transition-colors truncate">
                         {typeof item.title === 'string' ? item.title : (item.title?.english || item.title?.romaji)}
