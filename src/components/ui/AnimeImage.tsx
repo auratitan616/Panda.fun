@@ -29,9 +29,9 @@ export function AnimeImage({
   loading = 'lazy',
   ...props
 }: AnimeImageProps) {
-  const imageKey = src || '';
-  const [loadedKey, setLoadedKey] = useState('');
-  const isLoaded = loadedKey === imageKey && Boolean(imageKey);
+  const imageKey = (src || '') + '|' + (fallbackSrc || '');
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const isLoaded = loadedKey === imageKey;
 
   return (
     <div className={`relative overflow-hidden bg-[#12141c] ${aspectClasses[aspectRatio]} ${className}`}>
