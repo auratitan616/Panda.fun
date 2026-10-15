@@ -1,3 +1,4 @@
+import { PandaLoading } from './PandaLoading';
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
@@ -184,7 +185,7 @@ export function AuthModal() {
               {resetMode ? (
                 <div className="panda-auth__reset">
                   <label className="panda-auth__field"><span>Email address</span><div><Mail size={15} /><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="you@example.com" /></div></label>
-                  <button type="button" className="panda-auth__primary" disabled={loading} onClick={() => void resetPassword()}>{loading ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}Send reset email</button>
+                  <button type="button" className="panda-auth__primary" disabled={loading} onClick={() => void resetPassword()}>{loading ? <PandaLoading state="working" label="" size={18} variant="compact" /> : <KeyRound size={16} />}Send reset email</button>
                   <button type="button" className="panda-auth__text-button" onClick={() => { setResetMode(false); setError(''); setStatus(''); }}>Back to sign in</button>
                 </div>
               ) : (
