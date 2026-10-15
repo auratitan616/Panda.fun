@@ -111,10 +111,12 @@ export function ModernNotifications() {
                     }}
                   >
                     <div className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors cursor-pointer ${n.unread ? 'bg-[#181726]/80 hover:bg-[#201e33]' : 'hover:bg-white/5'}`}>
-                      <img 
-                        src={n.image} 
+                      <PandaImage
+                        src={n.image}
+                        fallbackSrc={undefined}
+                        size="w342"
                         alt={n.title}
-                        className="w-10 h-12 rounded-lg object-cover bg-black/50 shrink-0" 
+                        className="w-10 h-12 rounded-lg object-cover bg-black/50 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
