@@ -704,19 +704,6 @@ function HomeContent({
                 allowFullScreen
                 loading="eager"
               />
-            ) : featured?.backdrop ? (
-              <img
-                src={featuredBackdrop || featured.backdrop}
-                srcSet={featuredBackdropSmall && featuredBackdrop ? `${featuredBackdropSmall} 780w, ${featuredBackdrop} 1280w` : undefined}
-                sizes="100vw"
-                alt=""
-                className="kinoma-home-hero__banner-image"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                referrerPolicy="no-referrer"
-                onError={() => setHeroBackdropFailed(true)}
-              />
             ) : (
               <div className="kinoma-home-hero__banner-grid" />
             )}
