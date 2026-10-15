@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, Sparkles, Film, Clock, Check, X } from 'lucide-react';
+import { PandaImage } from '../PandaImage';
 
 interface NotificationItem {
   id: string;
