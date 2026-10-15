@@ -410,6 +410,7 @@ function PandaPoster({ item, priority = false }: { item: MovieApiMedia; priority
         src={item.poster}
         fallbackSrc={item.backdrop || DEFAULT_POSTER}
         size="w342"
+        provider={item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
         alt=""
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
@@ -680,6 +681,7 @@ function HomeContent({
               src={featuredBackdrop || featured?.backdrop || null}
               fallbackSrc={featured?.poster || DEFAULT_BANNER}
               size="w1280"
+              provider={featured?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
               alt=""
               className="kinoma-home-hero__banner-image kinoma-home-hero__banner-image--underlay"
               loading="eager"
