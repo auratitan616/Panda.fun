@@ -23,9 +23,9 @@ export function PandaLoading({
   return (
     <div
       className={[
-        'panda-thinking-orb',
-        isPage ? 'panda-thinking-orb--page' : '',
-        variant === 'compact' ? 'panda-thinking-orb--compact' : '',
+        'panda-thinking-orb flex items-center justify-center gap-3 text-white/75',
+        isPage ? 'panda-thinking-orb--page min-h-[55vh] flex-col gap-4' : '',
+        variant === 'compact' ? 'panda-thinking-orb--compact gap-2' : '',
         className,
       ].filter(Boolean).join(' ')}
       role="status"
@@ -33,7 +33,7 @@ export function PandaLoading({
       aria-label={label}
     >
       <Orb state={state} size={orbSize} label={label} />
-      {label && <span className="panda-thinking-orb__label">{label}</span>}
+      {label && <span className="panda-thinking-orb__label text-xs font-medium tracking-wide">{label}</span>}
     </div>
   );
 }
