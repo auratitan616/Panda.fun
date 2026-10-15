@@ -10,6 +10,7 @@ import { PandaImage } from '../components/ui/PandaImage';
 import { preferencesUtil } from '../lib/preferences';
 import { api, MovieApiError } from '../lib/api';
 import type { AnimeItem } from '../types';
+import { DEFAULT_POSTER } from '../types';
 
 type SearchItem = { id: string; title: string; type: 'movie' | 'series'; meta: string; image?: string; href: string; rating?: number; year?: number; };
 const titleOf = (item: AnimeItem) => typeof item.title === 'string' ? item.title : item.title.english || item.title.romaji || item.title.native || 'Untitled';
