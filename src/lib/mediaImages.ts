@@ -86,7 +86,7 @@ export function buildMediaImageCandidates(
   provider: MediaImageProvider = 'auto'
 ): string[] {
   const primary = normalizeMediaImageUrl(src, provider);
-  const fallback = normalizeMediaImageUrl(fallbackSrc);
+  const fallback = normalizeMediaImageUrl(fallbackSrc, provider);
   const candidates = primary ? tmdbSizedCandidates(primary, size) : [];
   if (fallback) candidates.push(...tmdbSizedCandidates(fallback, size));
   candidates.push(INLINE_FALLBACK);
