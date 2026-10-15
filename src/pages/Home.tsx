@@ -842,7 +842,7 @@ function HomeContent({
                 aria-label={hoverTrailer.title + ' trailer preview'}
               >
                 <div className="panda-home-hover-trailer__media">
-                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <img src={(hoverTrailer.backdrop || hoverTrailer.poster || '') as string} alt="" />}
+                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <PandaImage src={hoverTrailer.backdrop || null} fallbackSrc={hoverTrailer.poster || DEFAULT_BANNER} size="w1280" provider={hoverTrailer.source === 'tvmaze' ? 'tvmaze' : 'tmdb'} alt="" className="w-full h-full object-cover" loading="eager" />}
                 </div>
                 <div className="panda-home-hover-trailer__copy">
                   <span>🐼 QUICK LOOK</span>
