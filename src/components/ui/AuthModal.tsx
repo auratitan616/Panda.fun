@@ -2,7 +2,7 @@ import { PandaLoading } from './PandaLoading';
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
-  AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, KeyRound, Loader2, Lock,
+  AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, KeyRound, Lock,
   Mail, Sparkles, User as UserIcon, X
 } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
