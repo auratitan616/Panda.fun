@@ -29,10 +29,8 @@ describe('Home profile gate and trailer autoplay', () => {
     expect(source).toMatch(/contentWindow\.postMessage/);
   });
 
-  it('uses multiple TMDB poster sizes before giving up on a card image', () => {
-    expect(source).toMatch(/optimizeImageUrl\(value, 'w342'\)/);
-    expect(source).toMatch(/optimizeImageUrl\(value, 'w500'\)/);
-    expect(source).toMatch(/item\.poster \|\| item\.backdrop/);
+  it('uses the shared resilient loader with poster-to-backdrop fallback on cards', () => {
+    expect(source).toMatch(/<PandaImage[\s\S]*?src=\{item\.poster\}[\s\S]*?fallbackSrc=\{item\.backdrop \|\| DEFAULT_POSTER\}[\s\S]*?size="w342"/);
   });
 
   it('does not expose profile PIN locking', () => {
