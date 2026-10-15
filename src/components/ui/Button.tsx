@@ -1,3 +1,4 @@
+import { PandaLoading } from './PandaLoading';
 import React, { forwardRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -72,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin text-current shrink-0" />
+            <PandaLoading state="working" label="" size={18} variant="compact" />
             {children && <span>{children}</span>}
           </>
         ) : (
