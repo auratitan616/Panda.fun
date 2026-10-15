@@ -2,7 +2,7 @@ import { PandaLoading } from './PandaLoading';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import useSWR from 'swr';
-import { Search, Loader2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { api } from '../../lib/api';
 import { DEFAULT_POSTER } from '../../types';
