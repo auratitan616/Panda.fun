@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Play, X } from 'lucide-react';
 import { AnimeItem, DEFAULT_POSTER } from '../../../types';
 import { buildDetailsHref } from '../../../lib/mediaRoute';
-import { optimizeImageUrl } from '../../../lib/mediaImages';
+import { PandaImage } from '../PandaImage';
 
 export interface ModernCardProps {
   key?: React.Key;
@@ -31,8 +31,9 @@ export function ModernCard({
     : item.title?.english || item.title?.romaji || 'Unknown Anime';
 
   const detailHref = href || buildDetailsHref(title, item.type === 'movie' ? 'movie' : 'series', item.id);
-  const cardImage = optimizeImageUrl(item.image, 'w342') || item.image || DEFAULT_POSTER;
+  const cardImage = item.image || null;
   const defaultBadge = badgeText || (item.status === 'RELEASING' ? 'New Season' : undefined);
+  React.useEffect(() => setImageLoaded(false), [cardImage]);
 
   return (
     <div
@@ -54,14 +55,12 @@ export function ModernCard({
             <div className="absolute inset-0 animate-pulse bg-[#12141c]" aria-hidden="true" />
           )}
 
-          <img
+          <PandaImage
             src={cardImage}
+            fallbackSrc={DEFAULT_POSTER}
+            size="w342"
             alt={title}
-            srcSet={cardImage.includes("/w342/") ? (cardImage + " 342w, " + (optimizeImageUrl(cardImage, 'w500') || cardImage) + " 500w") : undefined}
-            sizes="(max-width: 540px) 44vw, (max-width: 900px) 30vw, (max-width: 1200px) 20vw, 18vw"
             loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
             onLoad={() => setImageLoaded(true)}
             className={`h-full w-full object-cover object-center transition-opacity duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
