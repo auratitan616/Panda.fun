@@ -1,6 +1,5 @@
 import { PandaLoading } from './PandaLoading';
 import React, { forwardRef } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
