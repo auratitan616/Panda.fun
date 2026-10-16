@@ -26,6 +26,7 @@ export function PandaImage({
   loading = 'lazy',
   decoding = 'async',
   fetchPriority = 'auto',
+  referrerPolicy = 'no-referrer',
   ...props
 }: PandaImageProps) {
   const candidates = buildMediaImageCandidates(src, fallbackSrc, size, provider);
@@ -53,6 +54,7 @@ export function PandaImage({
       loading={loading}
       decoding={decoding}
       fetchPriority={fetchPriority}
+      referrerPolicy={referrerPolicy}
       onLoad={(event) => {
         if (progress.key !== sourceKey) setProgress({ key: sourceKey, index: current.index, exhausted: false });
         onLoad?.(event);
