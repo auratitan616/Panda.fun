@@ -44,7 +44,7 @@ describe('media image URL normalization', () => {
       'https://image.tmdb.org/t/p/w500/poster.jpg',
       'https://image.tmdb.org/t/p/original/poster.jpg',
     ]);
-    expect(candidates[3]).toMatch(/^data:image\\/svg\\+xml/);
+    expect(candidates[3]).toMatch(/^data:image\/svg\+xml/);
     expect(candidates[candidates.length - 1]).toMatch(/^data:image\/svg\+xml/);
     expect(new Set(candidates).size).toBe(candidates.length);
   });
