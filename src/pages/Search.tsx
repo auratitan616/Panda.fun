@@ -1,5 +1,7 @@
 
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { attachBorderBeam } from 'border-beam-vanilla';
+import { ThinkingOrb } from 'thinking-orbs';
 import { Footer } from '../components/ui/Footer';
 import { Clock3, Filter, Search as SearchIcon, Sparkles, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
@@ -53,6 +55,7 @@ export function Search() {
   const [retryNonce, setRetryNonce] = useState(0);
   const [filter, setFilter] = useState<'all' | 'movie' | 'series'>('all');
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
   const isSearching = submittedQuery.length > 0;
   const visibleResults = useMemo(() => {
@@ -68,6 +71,18 @@ export function Search() {
         return score(b) - score(a);
       });
   }, [results, filter, submittedQuery]);
+
+  useEffect(() => {
+    const button = searchButtonRef.current;
+    if (!button) return;
+    const beam = attachBorderBeam(button, {
+      size: "md",
+      colorVariant: "colorful",
+      duration: 1.96,
+      theme: "dark",
+    });
+    return () => beam.destroy();
+  }, []);
 
   useEffect(() => {
     setRecentSearches(preferencesUtil.getRecentSearches());
@@ -163,7 +178,7 @@ export function Search() {
         <form className="kinoma-search-control is-open" onSubmit={submitSearch}>
           <SearchIcon size={18} /><input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={handleInputKeyDown} placeholder="Search movies, series or anime" aria-label="Search movies, series or anime" autoComplete="off" />
           {query && <button type="button" className="kinoma-search-control__clear" onClick={clearQueryInput} aria-label="Clear search"><X size={16} /></button>}
-          <button type="submit" className="kinoma-search-control__submit">Search</button>
+          <button ref={searchButtonRef} type="submit" className="kinoma-search-control__submit">Search</button>
         </form>
         {!isSearching && <button type="button" className="panda-search-surprise" onClick={surpriseMe} disabled={!surprisePool.length} aria-label="Pick a surprise title and open its details page"><Sparkles size={15} /> Surprise Me <span>Pick something for me</span></button>}
       </header>
@@ -171,7 +186,7 @@ export function Search() {
       <section ref={resultsRef} className="kinoma-search-results" id="search-results">
         <div className="kinoma-search-results__heading"><div><span className="kinoma-eyebrow">{isSearching ? 'Your search' : 'Live discovery'}</span><h2>{isSearching ? 'Matches' : 'Trending now'}</h2></div>{!isSearching && <Sparkles size={18} />}</div>
         {!loading && !error && results.length > 0 && <div className="kinoma-search-toolbar"><div className="kinoma-search-filters" role="tablist" aria-label="Filter search results"><button type="button" role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}><Filter size={13} /> All <span>{results.length}</span></button><button type="button" role="tab" aria-selected={filter === 'movie'} className={filter === 'movie' ? 'is-active' : ''} onClick={() => setFilter('movie')}>Movies <span>{results.filter(item => item.type === 'movie').length}</span></button><button type="button" role="tab" aria-selected={filter === 'series'} className={filter === 'series' ? 'is-active' : ''} onClick={() => setFilter('series')}>Series <span>{results.filter(item => item.type === 'series').length}</span></button></div><span className="kinoma-search-toolbar__count">{visibleResults.length} {visibleResults.length === 1 ? 'title' : 'titles'}</span></div>}
-        {loading ? <div className="kinoma-search-empty"><SearchIcon size={28} /><h3>Searching…</h3><p>Finding movies and series from MovieApi.</p></div>
+        {loading ? <div className="kinoma-search-empty"><ThinkingOrb state="searching" size={64} theme="dark" /><h3>Searching…</h3><p>Finding movies and series from TMDB.</p></div>
         : error ? <div className="kinoma-search-empty"><SearchIcon size={28} /><h3>Search unavailable</h3><p>{error}</p><button type="button" onClick={() => setRetryNonce(value => value + 1)}>Try again</button></div>
         : visibleResults.length ? <div className="kinoma-search-grid">{visibleResults.map((item, index) => <React.Fragment key={item.id}><ContentCard item={item} priority={index < 5} /></React.Fragment>)}</div>
         : <div className="kinoma-search-empty"><SearchIcon size={28} /><h3>{results.length ? 'No titles in this filter' : 'Nothing found yet'}</h3><p>{results.length ? 'Try another filter to see more matches.' : 'Try a different title, spelling, or a broader search.'}</p><button type="button" onClick={results.length ? () => setFilter('all') : clearSearch}>{results.length ? 'Show all results' : 'Back to trending'}</button></div>}
