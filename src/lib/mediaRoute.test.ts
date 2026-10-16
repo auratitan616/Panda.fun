@@ -45,9 +45,10 @@ describe('title-based detail routes', () => {
     );
   });
 
-  it('keeps legacy TVMaze media IDs normalized when resolving details', async () => {
-    const { resolveMediaIdFromSlug } = await import('./api');
-    expect(await resolveMediaIdFromSlug('kinoma_tvmaze_44776', 'series')).toBe('kinoma_tvmaze_44776');
+  it('does not carry a legacy TVMaze ID into a details route', () => {
+    expect(buildDetailsHref('The Last of Us', 'series', 'kinoma_tvmaze_44776')).toBe(
+      '/details/the-last-of-us?type=series'
+    );
   });
 
   it('normalizes punctuation and spacing into a stable title slug', () => {
