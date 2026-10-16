@@ -20,6 +20,8 @@ import { ProfileAvatar, ProfileSetup } from './Profile';
 import { updateSEO } from '../lib/seo';
 import { buildDetailsHref, buildWatchHref } from '../lib/mediaRoute';
 import { optimizeImageUrl } from '../lib/mediaImages';
+import { PandaImage } from '../components/ui/PandaImage';
+import { DEFAULT_BANNER, DEFAULT_POSTER } from '../types';
 import { ModernContinueWatching } from '../components/ui/modern/ModernContinueWatching';
 import '../styles/panda-home.css';
 
@@ -401,50 +403,18 @@ function requestTrailerPlayback(frame: HTMLIFrameElement | null) {
 }
 
 function PandaPoster({ item, priority = false }: { item: MovieApiMedia; priority?: boolean }) {
-  const candidates = Array.from(new Set(
-    [item.poster, item.backdrop]
-      .filter((value): value is string => typeof value === 'string' && value.length > 0)
-      .flatMap(value => {
-        const w342 = optimizeImageUrl(value, 'w342') || value;
-        const w500 = optimizeImageUrl(value, 'w500') || value;
-        return [w342, w500, value];
-      })
-  ));
-  const [sourceIndex, setSourceIndex] = useState(0);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setSourceIndex(0);
-    setFailed(false);
-  }, [item.id, item.poster, item.backdrop]);
-
-  const src = candidates[sourceIndex];
-
-  if (!src || failed) {
-    return (
-      <div className="panda-content-card__image-fallback" aria-hidden="true">
-        <KinomaLogo size="md" variant="mark" />
-        <span>{item.title}</span>
-      </div>
-    );
-  }
-
   return (
     <div className="panda-content-card__image-wrap">
       <div className="panda-content-card__image-skeleton" aria-hidden="true" />
-      <img
-        src={src}
-        srcSet={src.includes('/w500/') ? `${src.replace('/w500/', '/w342/')} 342w, ${src} 500w` : undefined}
-        sizes="(max-width: 700px) 42vw, (max-width: 1100px) 24vw, 18vw"
+      <PandaImage
+        src={item.poster}
+        fallbackSrc={item.backdrop || DEFAULT_POSTER}
+        size="w342"
+        provider={item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
         alt=""
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
         decoding="async"
-        referrerPolicy="no-referrer"
-        onError={() => {
-          if (sourceIndex < candidates.length - 1) setSourceIndex(index => index + 1);
-          else setFailed(true);
-        }}
         onLoad={event => event.currentTarget.previousElementSibling?.classList.add('is-hidden')}
       />
     </div>
@@ -568,7 +538,6 @@ function HomeContent({
   const [isInList, setIsInList] = useState(false);
   // The featured trailer is intentionally unmuted. The profile choice is the entry interaction before Home mounts.
   const [trailerReady, setTrailerReady] = useState(false);
-  const [heroBackdropFailed, setHeroBackdropFailed] = useState(false);
   const trailerFrameRef = useRef<HTMLIFrameElement | null>(null);
   
   const [hoverTrailer, setHoverTrailer] = useState<MovieApiMedia | null>(null);
@@ -639,9 +608,6 @@ function HomeContent({
   const featuredBackdrop = featured?.backdrop
     ? (optimizeImageUrl(featured.backdrop, 'w1280') || featured.backdrop)
     : null;
-  const featuredBackdropSmall = featured?.backdrop
-    ? (optimizeImageUrl(featured.backdrop, 'w780') || featured.backdrop)
-    : null;
   const topTen = useMemo(() => [...trending, ...popularMovies, ...popularTv].filter((item, index, list) => item?.id && list.findIndex(candidate => candidate.id === item.id) === index).slice(0, 10), [trending, popularMovies, popularTv]);
 
   const toggleFeaturedList = () => {
@@ -656,7 +622,6 @@ function HomeContent({
 
   useEffect(() => {
     setTrailerReady(false);
-    setHeroBackdropFailed(false);
     if (featured?.id) setIsInList(libraryManager.isInWatchlist(featured.id));
   }, [featured?.id]);
 
@@ -712,20 +677,17 @@ function HomeContent({
         {/* PRESERVED HERO/TRAILER — intentionally unchanged */}
         <section className="kinoma-home-hero kinoma-home-hero--trailer" aria-labelledby="kinoma-home-title">
           <div className="kinoma-home-hero__trailer-bg" aria-label={featured?.title ? featured.title + ' trailer' : 'Featured trailer'}>
-            {featured?.backdrop && !heroBackdropFailed && (
-              <img
-                src={featuredBackdrop || featured.backdrop}
-                srcSet={featuredBackdropSmall && featuredBackdrop ? `${featuredBackdropSmall} 780w, ${featuredBackdrop} 1280w` : undefined}
-                sizes="100vw"
-                alt=""
-                className="kinoma-home-hero__banner-image kinoma-home-hero__banner-image--underlay"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                referrerPolicy="no-referrer"
-                onError={() => setHeroBackdropFailed(true)}
-              />
-            )}
+            <PandaImage
+              src={featuredBackdrop || featured?.backdrop || null}
+              fallbackSrc={featured?.poster || DEFAULT_BANNER}
+              size="w1280"
+              provider={featured?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+              alt=""
+              className="kinoma-home-hero__banner-image kinoma-home-hero__banner-image--underlay"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
             {trailer?.trailer?.embedUrl ? (
               <iframe
                 ref={trailerFrameRef}
@@ -741,19 +703,6 @@ function HomeContent({
                 allow="autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
                 loading="eager"
-              />
-            ) : featured?.backdrop ? (
-              <img
-                src={featuredBackdrop || featured.backdrop}
-                srcSet={featuredBackdropSmall && featuredBackdrop ? `${featuredBackdropSmall} 780w, ${featuredBackdrop} 1280w` : undefined}
-                sizes="100vw"
-                alt=""
-                className="kinoma-home-hero__banner-image"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                referrerPolicy="no-referrer"
-                onError={() => setHeroBackdropFailed(true)}
               />
             ) : (
               <div className="kinoma-home-hero__banner-grid" />
@@ -893,7 +842,7 @@ function HomeContent({
                 aria-label={hoverTrailer.title + ' trailer preview'}
               >
                 <div className="panda-home-hover-trailer__media">
-                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <img src={(hoverTrailer.backdrop || hoverTrailer.poster || '') as string} alt="" />}
+                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <PandaImage src={hoverTrailer.backdrop || null} fallbackSrc={hoverTrailer.poster || DEFAULT_BANNER} size="w1280" provider={hoverTrailer.source === 'tvmaze' ? 'tvmaze' : 'tmdb'} alt="" className="w-full h-full object-cover" loading="eager" />}
                 </div>
                 <div className="panda-home-hover-trailer__copy">
                   <span>🐼 QUICK LOOK</span>

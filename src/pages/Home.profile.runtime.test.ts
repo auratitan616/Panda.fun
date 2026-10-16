@@ -7,7 +7,7 @@ describe('Home profile gate and trailer autoplay', () => {
   it('mounts the home content only after the profile gate and has one gate owner', () => {
     expect(source).not.toMatch(/function HomeContent\(\)[\s\S]*?<HomeProfileGate\s*\/>/);
     expect(source).toMatch(/export function Home\(\)[\s\S]*?<HomeProfileGate onReady=\{handleProfileReady\} onBlock=\{handleProfileBlock\} \/>/);
-    expect(source).toMatch(/\{profileReady && <HomeContent \/>\}/);
+    expect(source).toMatch(/\{profileReady && \([\s\S]*?<HomeContent[\s\S]*?\/>\s*\)\}/);
   });
 
   it('hands Home off in the same profile selection turn before the exit delay', () => {
@@ -29,10 +29,8 @@ describe('Home profile gate and trailer autoplay', () => {
     expect(source).toMatch(/contentWindow\.postMessage/);
   });
 
-  it('uses multiple TMDB poster sizes before giving up on a card image', () => {
-    expect(source).toMatch(/optimizeImageUrl\(value, 'w342'\)/);
-    expect(source).toMatch(/optimizeImageUrl\(value, 'w500'\)/);
-    expect(source).toMatch(/item\.poster \|\| item\.backdrop/);
+  it('uses the shared resilient loader with poster-to-backdrop fallback on cards', () => {
+    expect(source).toMatch(/<PandaImage[\s\S]*?src=\{item\.poster\}[\s\S]*?fallbackSrc=\{item\.backdrop \|\| DEFAULT_POSTER\}[\s\S]*?size="w342"/);
   });
 
   it('does not expose profile PIN locking', () => {

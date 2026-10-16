@@ -11,6 +11,7 @@ import { updateSEO } from '../lib/seo';
 import { trackEvent, trackGAEvent } from '../lib/analytics';
 import { buildDetailsHref, buildWatchHref, parseDetailsRouteSearch } from '../lib/mediaRoute';
 import { createEpisodeRailObserver } from '../lib/safeResizeObserver';
+import { PandaImage } from '../components/ui/PandaImage';
 import { calculateEpisodeRailStep, sortEpisodesForDisplay } from '../lib/episodeRail';
 
 function cleanText(value: unknown) { return typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : ''; }
@@ -242,6 +243,16 @@ export function Details() {
       {error && !loading && <div className="panda-state-card is-error" role="alert"><div><strong>We couldn't load this title.</strong><small>{error}</small></div><button type="button" onClick={() => setRetryKey(value => value + 1)}>Retry</button></div>}
       <section className="kinoma-details-hero kinoma-details-hero--trailer">
         <div className="kinoma-details-hero__trailer-bg" aria-label={title + ' trailer preview'}>
+          <PandaImage
+            src={data?.cover || data?.banner || null}
+            fallbackSrc={poster || DEFAULT_BANNER}
+            size="w1280"
+            provider={data?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+            alt=""
+            className="kinoma-details-hero__backdrop"
+            loading="eager"
+            fetchPriority="high"
+          />
           {trailer?.trailer?.embedUrl && !trailerFailed ? <iframe
             src={trailerSrc(trailer.trailer.embedUrl)}
             title={title + ' trailer'}
@@ -316,13 +327,15 @@ export function Details() {
                 }}
               >
                 <div className="kinoma-episode-art">
-                  {ep.image ? <img
+                  <PandaImage
                     src={ep.image}
+                    fallbackSrc={poster || DEFAULT_POSTER}
+                    size="w500"
                     alt=""
-                    loading="eager"
+                    loading={ep.number <= 3 ? 'eager' : 'lazy'}
                     fetchPriority={ep.number <= 3 ? 'high' : 'auto'}
-                    decoding="async"
-                  /> : <span><Play size={20} /></span>}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="kinoma-episode-copy">
                   <span className="kinoma-episode-kicker">EPISODE {ep.number}</span>
@@ -355,7 +368,15 @@ export function Details() {
             return (
               <button type="button" key={item.id} className="kinoma-more-card" onClick={() => setLocation(buildDetailsHref({ title: itemTitle, id: item.id }, itemType))} aria-label={'Open ' + itemTitle}>
                 <div className={'kinoma-more-card__art tone-' + (i % 5)}>
-                  {item.image ? <img src={item.image} alt="" loading="eager" fetchPriority={i < 5 ? 'high' : 'auto'} decoding="async" referrerPolicy="no-referrer" /> : <Film size={25} />}
+                  <PandaImage
+                    src={item.image}
+                    fallbackSrc={DEFAULT_POSTER}
+                    size="w342"
+                    alt=""
+                    loading={i < 5 ? 'eager' : 'lazy'}
+                    fetchPriority={i < 5 ? 'high' : 'auto'}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="kinoma-more-card__copy"><strong>{itemTitle}</strong><span>{item.genres?.[0] || 'Recommended'} <i>•</i> {itemType === 'movie' ? 'Movie' : 'Series'}</span></div>
               </button>

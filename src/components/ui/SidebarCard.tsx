@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'wouter';
 import { motion } from 'motion/react';
 import { AnimeItem, DEFAULT_POSTER } from '../../types';
+import { PandaImage } from './PandaImage';
 
 interface SidebarCardProps {
   item: AnimeItem;
@@ -30,9 +31,11 @@ export function SidebarCard({ item, rank }: SidebarCardProps) {
         </div>
         
         <div className="w-12 h-16 shrink-0 rounded-lg overflow-hidden relative bg-[#181820] border border-white/5 group-hover:border-[#9c27b0]/40 transition-colors">
-          <img 
-            src={item.image || DEFAULT_POSTER} 
-            alt={title} 
+          <PandaImage
+            src={item.image}
+            fallbackSrc={DEFAULT_POSTER}
+            size="w342"
+            alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />

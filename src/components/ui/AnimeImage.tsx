@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { DEFAULT_POSTER } from '../../types';
+import { PandaImage } from './PandaImage';
 
-export interface AnimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'loading'> {
-  src?: string;
+export interface AnimeImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'loading' | 'src' | 'srcSet' | 'onError' | 'onLoad'> {
+  src?: string | null;
   alt: string;
   aspectRatio?: 'poster' | 'landscape' | 'square' | 'custom';
-  fallbackSrc?: string;
+  fallbackSrc?: string | null;
   className?: string;
   imageClassName?: string;
   loading?: 'lazy' | 'eager';
@@ -28,33 +29,22 @@ export function AnimeImage({
   loading = 'lazy',
   ...props
 }: AnimeImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-
-  const displaySrc = hasError || !src ? fallbackSrc : src;
+  const imageKey = (src || '') + '|' + (fallbackSrc || '');
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const isLoaded = loadedKey === imageKey;
 
   return (
-    <div
-      className={`relative overflow-hidden bg-[#12141c] ${aspectClasses[aspectRatio]} ${className}`}
-    >
-      {/* Loading Skeleton */}
-      {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-[#161824] animate-pulse" />
-      )}
-
-      <img
-        src={displaySrc}
+    <div className={`relative overflow-hidden bg-[#12141c] ${aspectClasses[aspectRatio]} ${className}`}>
+      {!isLoaded && <div className="absolute inset-0 bg-[#161824] animate-pulse" aria-hidden="true" />}
+      <PandaImage
+        key={imageKey}
+        src={src}
+        fallbackSrc={fallbackSrc}
         alt={alt}
+        size={aspectRatio === 'landscape' ? 'w1280' : 'w342'}
         loading={loading}
-        referrerPolicy="no-referrer"
-        onLoad={() => setIsLoaded(true)}
-        onError={() => {
-          setHasError(true);
-          setIsLoaded(true);
-        }}
-        className={`w-full h-full object-cover transition-opacity duration-300 ease-out ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        } ${imageClassName}`}
+        onLoad={() => setLoadedKey(imageKey)}
+        className={`relative w-full h-full object-cover transition-opacity duration-300 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${imageClassName}`}
         {...props}
       />
     </div>

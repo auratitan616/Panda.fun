@@ -6,9 +6,11 @@ import { Link, useLocation } from 'wouter';
 import { updateSEO } from '../lib/seo';
 import { trackEvent, trackGAEvent } from '../lib/analytics';
 import { buildDetailsHref } from '../lib/mediaRoute';
+import { PandaImage } from '../components/ui/PandaImage';
 import { preferencesUtil } from '../lib/preferences';
 import { api, MovieApiError } from '../lib/api';
 import type { AnimeItem } from '../types';
+import { DEFAULT_POSTER } from '../types';
 
 type SearchItem = { id: string; title: string; type: 'movie' | 'series'; meta: string; image?: string; href: string; rating?: number; year?: number; };
 const titleOf = (item: AnimeItem) => typeof item.title === 'string' ? item.title : item.title.english || item.title.romaji || item.title.native || 'Untitled';
@@ -32,7 +34,7 @@ function ContentCard({ item, priority = false }: { item: SearchItem; priority?: 
       void trackEvent({ type: 'content_select', animeId: item.id, animeTitle: item.title, metadata: { source: 'search' } });
     }}>
     <div className="kinoma-search-card__art" aria-hidden="true">
-      {item.image ? <img src={item.image} alt="" srcSet={item.image.includes("/w500/") ? `${item.image.replace("/w500/", "/w342/")} 342w, ${item.image} 500w` : undefined} sizes="(max-width: 700px) 42vw, (max-width: 1100px) 24vw, 18vw" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} decoding="async" referrerPolicy="no-referrer" /> : <><span className="kinoma-search-card__orb kinoma-search-card__orb--one" /><span className="kinoma-search-card__orb kinoma-search-card__orb--two" /></>}
+      <PandaImage src={item.image} fallbackSrc={DEFAULT_POSTER} size="w342" alt="" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="w-full h-full object-cover" />
       <span className="kinoma-search-card__shine" /><span className="kinoma-search-card__type">{item.type.toUpperCase()}</span>
     </div>
     <div className="kinoma-search-card__copy"><h3>{item.title}</h3><p>{item.meta}</p></div>

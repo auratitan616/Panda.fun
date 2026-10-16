@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { AnimeItem, DEFAULT_POSTER } from '../../types';
 import { Play } from 'lucide-react';
+import { PandaImage } from './PandaImage';
 import { motion } from 'motion/react';
 
 const container = {
@@ -38,13 +39,13 @@ function AnimeCard({ item }: { item: AnimeItem }) {
             <div className="absolute inset-0 bg-[#16161c] animate-pulse" />
           )}
 
-          <img 
-            src={item.image || DEFAULT_POSTER} 
+          <PandaImage
+            src={item.image}
+            fallbackSrc={DEFAULT_POSTER}
+            size="w342"
             alt={itemTitle}
             onLoad={() => setImageLoaded(true)}
-            className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
           />
           

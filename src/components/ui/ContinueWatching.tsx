@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { Play, X } from 'lucide-react';
+import { PandaImage } from './PandaImage';
 import { motion, AnimatePresence } from 'motion/react';
 import { historyUtil, HistoryItem, formatPlaybackTimestamp } from '../../lib/history';
 import { buildWatchHref } from '../../lib/mediaRoute';
@@ -54,7 +55,7 @@ export function ContinueWatching() {
               <motion.div key={item.slug || item.animeId} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
                 <Link href={watchUrl(item)} className="block relative overflow-hidden rounded-xl border border-white/10 bg-black/30 group">
                   <div className="relative aspect-video overflow-hidden bg-black">
-                    <img src={item.image || DEFAULT_POSTER} alt={item.title} className="w-full h-full object-cover opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" loading="lazy" />
+                    <PandaImage src={item.image} fallbackSrc={DEFAULT_POSTER} size="w780" alt={item.title} className="w-full h-full object-cover opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" loading="lazy" />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity">
                       <span className="w-11 h-11 rounded-full bg-white/90 text-black flex items-center justify-center"><Play className="w-5 h-5 fill-current" /></span>
                     </div>

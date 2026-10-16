@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import { PandaImage } from '../components/ui/PandaImage';
+import { DEFAULT_POSTER } from '../types';
 import {
   ArrowLeft, ArrowRight, Check, Compass, Drama, Edit3, Fingerprint, Ghost, History,
   Heart, Library, Laugh, LogIn, LogOut, Mail, Plus, Rocket, Search,
@@ -487,7 +489,7 @@ function ProfileDashboard({
                     className="panda-profile-watch-row"
                   >
                     <div className="panda-profile-watch-row__thumb">
-                      {item.image ? <img src={item.image} alt="" loading="lazy" /> : <span>🐼</span>}
+                      <PandaImage src={item.image} fallbackSrc={DEFAULT_POSTER} size="w342" alt="" loading="lazy" className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <strong>{item.title}</strong>
