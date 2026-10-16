@@ -36,6 +36,9 @@ export function normalizeMediaImageUrl(
     return 'https://' + TMDB_IMAGE_HOST + path;
   }
 
+  // TVMaze upload paths are not valid TMDB artwork and must not resolve against the app origin.
+  if (/^\/?uploads\/images\//i.test(candidate)) return null;
+
 
   // TMDB raw poster_path is a single root-level filename (for example /abc123.jpg).
   // Preserve app-relative paths such as /assets/... and /api/... on the current origin.
