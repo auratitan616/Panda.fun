@@ -519,20 +519,42 @@ export const api = {
     const media = mediaFromId(id);
     if (!media) throw new MovieApiError('This title is not a MovieApi media ID.', 400, 'INVALID_MEDIA_ID');
 
-    const path = media.provider === 'tvmaze'
-      ? `/api/v1/tv/${media.id}`
-      : `/api/v1/details/${media.type === 'movie' ? 'movie' : 'tv'}/${media.id}`;
-    const data = await request<MovieApiMedia>(path, undefined, { signal });
-    if (media.provider === 'tmdb' && media.type === 'tv' && !data.overview && data.ids?.tvmaze) {
+    if (media.provider === 'tvmaze') {
+      // Legacy TVmaze IDs may still appear in saved links. Use TVmaze only to
+      // resolve the canonical TMDB ID; all browser artwork and trailers come from TMDB.
+      const legacy = await request<MovieApiMedia>(`/api/v1/tv/${media.id}`, undefined, { signal }, 300_000);
+      const tmdbId = Number(legacy.ids?.tmdb || 0);
+      if (tmdbId > 0) {
+        try {
+          const canonical = await request<MovieApiMedia>(`/api/v1/details/tv/${tmdbId}`, undefined, { signal }, 300_000);
+          return toDetails({
+            ...canonical,
+            overview: canonical.overview || legacy.overview || null,
+            // Do not fall back to TVmaze artwork; it caused broken/inconsistent browser images.
+            poster: canonical.poster || null,
+            backdrop: canonical.backdrop || null,
+            genres: canonical.genres?.length ? canonical.genres : (legacy.genres || []),
+            runtime: canonical.runtime || legacy.runtime || null,
+          });
+        } catch {
+          // Keep legacy links readable if TMDB details are unavailable, but never use TVmaze artwork.
+        }
+      }
+      return toDetails({ ...legacy, poster: null, backdrop: null, trailer: null });
+    }
+
+    const data = await request<MovieApiMedia>(`/api/v1/details/${media.type === 'movie' ? 'movie' : 'tv'}/${media.id}`, undefined, { signal });
+    if (media.type === 'tv' && !data.overview && data.ids?.tvmaze) {
       try {
-        const tvmaze = await request<MovieApiMedia>(`/api/v1/tv/${data.ids.tvmaze}`, undefined, { signal }, 300_000);
+        const legacy = await request<MovieApiMedia>(`/api/v1/tv/${data.ids.tvmaze}`, undefined, { signal }, 300_000);
         return toDetails({
           ...data,
-          overview: data.overview || tvmaze.overview || null,
-          poster: data.poster || tvmaze.poster || null,
-          backdrop: data.backdrop || tvmaze.backdrop || null,
-          genres: data.genres?.length ? data.genres : (tvmaze.genres || []),
-          runtime: data.runtime || tvmaze.runtime || null,
+          overview: data.overview || legacy.overview || null,
+          // Keep metadata enrichment, but never replace TMDB artwork with TVmaze URLs.
+          poster: data.poster || null,
+          backdrop: data.backdrop || null,
+          genres: data.genres?.length ? data.genres : (legacy.genres || []),
+          runtime: data.runtime || legacy.runtime || null,
         });
       } catch {
         // TMDB remains the authoritative detail response when the optional fallback is unavailable.
@@ -545,19 +567,9 @@ export const api = {
     const media = mediaFromId(id);
     if (!media || media.type !== 'tv') return { seasons: [] as AnimeSeasonItem[] };
 
-    if (media.provider === 'tvmaze') {
-      const data = await request<{ seasons: any[] }>(`/api/v1/tv/${media.id}/seasons`, undefined, { signal });
-      return {
-        seasons: (data.seasons || []).map((season: any): AnimeSeasonItem => ({
-          seasonNumber: Number(season.number || 1),
-          animeId: id,
-          title: season.name || `Season ${season.number || 1}`,
-          episodeCount: Number(season.episodeOrder || 0),
-        })),
-      };
-    }
-
-    const tmdb = await request<MovieApiMedia & { numberOfSeasons?: number }>(`/api/v1/tmdb/tv/${media.id}`, undefined, { signal }, 300_000);
+    const tmdbId = await resolveTmdbId(media, signal);
+    if (!tmdbId) return { seasons: [] as AnimeSeasonItem[] };
+    const tmdb = await request<MovieApiMedia & { numberOfSeasons?: number }>(`/api/v1/tmdb/tv/${tmdbId}`, undefined, { signal }, 300_000);
     const count = Math.max(0, Number(tmdb.numberOfSeasons || 0));
     return { seasons: Array.from({ length: count }, (_, index): AnimeSeasonItem => ({
       seasonNumber: index + 1, animeId: id, title: `Season ${index + 1}`, episodeCount: 0
@@ -568,12 +580,9 @@ export const api = {
     const media = mediaFromId(id);
     if (!media || media.type !== 'tv') return { anime_id: id, season_number: seasonNumber, season_anime_id: id, episodes: [] as Episode[] };
 
-    let data: { episodes: any[] };
-    if (media.provider === 'tvmaze') {
-      data = await request<{ episodes: any[] }>(`/api/v1/tv/${media.id}/season/${seasonNumber}`, undefined, { signal }, 300_000);
-    } else {
-      data = await request<{ episodes: any[] }>(`/api/v1/tmdb/tv/${media.id}/season/${seasonNumber}`, undefined, { signal }, 300_000);
-    }
+    const tmdbId = await resolveTmdbId(media, signal);
+    if (!tmdbId) return { anime_id: id, season_number: seasonNumber, season_anime_id: id, episodes: [] as Episode[] };
+    const data = await request<{ episodes: any[] }>(`/api/v1/tmdb/tv/${tmdbId}/season/${seasonNumber}`, undefined, { signal }, 300_000);
 
     return {
       anime_id: id, season_number: seasonNumber, season_anime_id: id,
