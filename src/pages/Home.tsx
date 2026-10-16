@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ThinkingOrb } from 'thinking-orbs';
 import { Footer } from '../components/ui/Footer';
 import { Link } from 'wouter';
 import { KinomaLogo } from '../components/ui/KinomaLogo';
@@ -176,6 +177,12 @@ function HomeProfileGate({
       setCountdownProgress(1);
       setCountdownEnabled(true);
       setGateState('chooser');
+    }).catch(() => {
+      // A profile-store outage should never leave the entire homepage blocked indefinitely.
+      if (cancelled) return;
+      setProfiles([]);
+      setGateState('hidden');
+      onReady();
     });
 
     return () => {
@@ -220,9 +227,7 @@ function HomeProfileGate({
       <div className="panda-home-profile-gate" role="status" aria-live="polite">
         <div className="panda-home-profile-gate__ambient" aria-hidden="true" />
         <div className="panda-home-profile-gate__loading">
-          <div className="panda-home-profile-gate__loading-mark" aria-hidden="true">
-            <img src="/profile-avatars/panda.svg" alt="" />
-          </div>
+          <ThinkingOrb state="working" size={64} theme="dark" aria-label="Loading Panda.fun" />
         </div>
       </div>
     );
