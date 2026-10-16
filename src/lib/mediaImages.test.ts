@@ -21,7 +21,9 @@ describe('media image URL normalization', () => {
       .toBe('https://static.tvmaze.com/uploads/images/original_untouched/1/2/show.jpg');
   });
 
-  it('rejects ambiguous relative paths and malformed URLs', () => {
+  it('preserves same-origin frontend paths while rejecting ambiguous relative paths and malformed URLs', () => {
+    expect(normalizeMediaImageUrl('/assets/poster.webp', 'tmdb')).toBe('/assets/poster.webp');
+    expect(normalizeMediaImageUrl('/api/media/poster?id=123', 'tmdb')).toBe('/api/media/poster?id=123');
     expect(normalizeMediaImageUrl('posters/show.jpg')).toBeNull();
     expect(normalizeMediaImageUrl('https://[')).toBeNull();
     expect(normalizeMediaImageUrl('javascript:alert(1)')).toBeNull();
