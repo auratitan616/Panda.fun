@@ -34,7 +34,9 @@
     "wouter": "^3.10.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "border-beam-vanilla": "^1.0.2",
+    "thinking-orbs": "^0.3.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
