@@ -250,6 +250,7 @@ export function Details() {
             provider={data?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
             alt=""
             className="kinoma-details-hero__backdrop"
+            style={{ display: "block" }}
             loading="eager"
             fetchPriority="high"
           />
