@@ -44,7 +44,7 @@ export function buildDetailsHref(
   if (normalizedMediaId) {
     const tmdb = normalizedMediaId.match(/^(?:kinoma_)?tmdb_(movie|tv)_\d+$/);
     const mediaType = tmdb ? (tmdb[1] === 'movie' ? 'movie' : 'series') : null;
-    if (!mediaType || mediaType === type) params.set('mediaId', normalizedMediaId);
+    if (mediaType && mediaType === type) params.set('mediaId', normalizedMediaId);
   }
   return '/details/' + encodeURIComponent(slug) + '?' + params.toString();
 }
