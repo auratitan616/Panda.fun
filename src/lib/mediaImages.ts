@@ -8,7 +8,7 @@ function isTmdbImage(url: URL) {
   return url.hostname.toLowerCase() === TMDB_IMAGE_HOST && url.pathname.includes('/t/p/');
 }
 
-/** Normalize known provider artwork; never turn ambiguous relative strings into same-origin URLs. */
+/** Normalize provider artwork while preserving valid same-origin paths returned by frontend data sources. */
 export function normalizeMediaImageUrl(
   value: string | null | undefined,
   provider: MediaImageProvider = 'auto'
@@ -29,16 +29,25 @@ export function normalizeMediaImageUrl(
     }
   }
 
-  if (provider === 'tmdb' || /^\/t\/p\//i.test(candidate)) {
+  if (/^\/t\/p\//i.test(candidate)) {
     const path = candidate.startsWith('/t/p/')
       ? candidate
       : '/t/p/original/' + candidate.replace(/^\/+/, '');
     return 'https://' + TMDB_IMAGE_HOST + path;
   }
 
-  if (provider === 'tvmaze' || /^\/?uploads\/images\//i.test(candidate)) {
+  if (/^\/?uploads\/images\//i.test(candidate)) {
     const path = candidate.startsWith('/') ? candidate : '/' + candidate;
     return 'https://' + TVMAZE_IMAGE_HOST + path;
+  }
+
+  // TMDB raw poster_path is a single root-level filename (for example /abc123.jpg).
+  // Preserve app-relative paths such as /assets/... and /api/... on the current origin.
+  if (candidate.startsWith('/') && !candidate.startsWith('//')) {
+    const isRawTmdbFilename = provider === 'tmdb' && /^\/[^/]+\.(?:jpe?g|png|webp)$/i.test(candidate);
+    return isRawTmdbFilename
+      ? 'https://' + TMDB_IMAGE_HOST + '/t/p/original' + candidate
+      : candidate;
   }
 
   return null;
