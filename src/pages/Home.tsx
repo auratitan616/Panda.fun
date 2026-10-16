@@ -410,7 +410,7 @@ function PandaPoster({ item, priority = false }: { item: MovieApiMedia; priority
         src={item.poster}
         fallbackSrc={item.backdrop || DEFAULT_POSTER}
         size="w342"
-        provider={item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+        provider="tmdb"
         alt=""
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
