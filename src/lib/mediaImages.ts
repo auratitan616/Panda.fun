@@ -1,8 +1,7 @@
 export type MediaImageSize = 'w342' | 'w500' | 'w780' | 'w1280';
-export type MediaImageProvider = 'auto' | 'tmdb' | 'tvmaze';
+export type MediaImageProvider = 'auto' | 'tmdb';
 
 const TMDB_IMAGE_HOST = 'image.tmdb.org';
-const TVMAZE_IMAGE_HOST = 'static.tvmaze.com';
 
 function isTmdbImage(url: URL) {
   return url.hostname.toLowerCase() === TMDB_IMAGE_HOST && url.pathname.includes('/t/p/');
@@ -22,6 +21,7 @@ export function normalizeMediaImageUrl(
     try {
       const parsed = new URL(candidate);
       if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+      if (parsed.hostname.toLowerCase() === 'static.tvmaze.com') return null;
       parsed.protocol = 'https:';
       return parsed.toString();
     } catch {
@@ -36,10 +36,9 @@ export function normalizeMediaImageUrl(
     return 'https://' + TMDB_IMAGE_HOST + path;
   }
 
-  if (/^\/?uploads\/images\//i.test(candidate)) {
-    const path = candidate.startsWith('/') ? candidate : '/' + candidate;
-    return 'https://' + TVMAZE_IMAGE_HOST + path;
-  }
+  // TVMaze upload paths are not valid TMDB artwork and must not resolve against the app origin.
+  if (/^\/?uploads\/images\//i.test(candidate)) return null;
+
 
   // TMDB raw poster_path is a single root-level filename (for example /abc123.jpg).
   // Preserve app-relative paths such as /assets/... and /api/... on the current origin.

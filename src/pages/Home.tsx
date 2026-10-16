@@ -410,7 +410,7 @@ function PandaPoster({ item, priority = false }: { item: MovieApiMedia; priority
         src={item.poster}
         fallbackSrc={item.backdrop || DEFAULT_POSTER}
         size="w342"
-        provider={item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+        provider="tmdb"
         alt=""
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
@@ -681,7 +681,7 @@ function HomeContent({
               src={featuredBackdrop || featured?.backdrop || null}
               fallbackSrc={featured?.poster || DEFAULT_BANNER}
               size="w1280"
-              provider={featured?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+              provider="tmdb"
               alt=""
               className="kinoma-home-hero__banner-image kinoma-home-hero__banner-image--underlay"
               loading="eager"
@@ -842,7 +842,7 @@ function HomeContent({
                 aria-label={hoverTrailer.title + ' trailer preview'}
               >
                 <div className="panda-home-hover-trailer__media">
-                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <PandaImage src={hoverTrailer.backdrop || null} fallbackSrc={hoverTrailer.poster || DEFAULT_BANNER} size="w1280" provider={hoverTrailer.source === 'tvmaze' ? 'tvmaze' : 'tmdb'} alt="" className="w-full h-full object-cover" loading="eager" />}
+                  {hoverTrailerUrl ? <iframe src={hoverTrailerUrl} title={hoverTrailer.title + ' trailer preview'} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /> : <PandaImage src={hoverTrailer.backdrop || null} fallbackSrc={hoverTrailer.poster || DEFAULT_BANNER} size="w1280" provider="tmdb" alt="" className="w-full h-full object-cover" loading="eager" />}
                 </div>
                 <div className="panda-home-hover-trailer__copy">
                   <span>🐼 QUICK LOOK</span>

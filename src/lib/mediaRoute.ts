@@ -43,9 +43,8 @@ export function buildDetailsHref(
   const normalizedMediaId = String(media ? media.id || '' : mediaId || '').trim();
   if (normalizedMediaId) {
     const tmdb = normalizedMediaId.match(/^(?:kinoma_)?tmdb_(movie|tv)_\d+$/);
-    const isTvmaze = /^kinoma_tvmaze_\d+$/.test(normalizedMediaId);
-    const mediaType = tmdb ? (tmdb[1] === 'movie' ? 'movie' : 'series') : isTvmaze ? 'series' : null;
-    if (!mediaType || mediaType === type) params.set('mediaId', normalizedMediaId);
+    const mediaType = tmdb ? (tmdb[1] === 'movie' ? 'movie' : 'series') : null;
+    if (mediaType && mediaType === type) params.set('mediaId', normalizedMediaId);
   }
   return '/details/' + encodeURIComponent(slug) + '?' + params.toString();
 }

@@ -6,9 +6,8 @@ import {
 } from './mediaImages';
 
 describe('media image URL normalization', () => {
-  it('normalizes HTTP provider URLs to HTTPS without altering their path', () => {
-    expect(normalizeMediaImageUrl('http://static.tvmaze.com/uploads/images/medium_portrait/show.jpg'))
-      .toBe('https://static.tvmaze.com/uploads/images/medium_portrait/show.jpg');
+  it('rejects legacy TVMaze artwork URLs', () => {
+    expect(normalizeMediaImageUrl('http://static.tvmaze.com/uploads/images/medium_portrait/show.jpg')).toBeNull();
   });
 
   it('constructs a TMDB URL for a raw poster path', () => {
@@ -16,9 +15,8 @@ describe('media image URL normalization', () => {
       .toBe('https://image.tmdb.org/t/p/original/abc123.jpg');
   });
 
-  it('constructs a TVMaze URL for a known relative upload path', () => {
-    expect(normalizeMediaImageUrl('/uploads/images/original_untouched/1/2/show.jpg'))
-      .toBe('https://static.tvmaze.com/uploads/images/original_untouched/1/2/show.jpg');
+  it('does not treat legacy provider upload paths as TMDB artwork', () => {
+    expect(normalizeMediaImageUrl('/uploads/images/original_untouched/1/2/show.jpg')).toBeNull();
   });
 
   it('preserves same-origin frontend paths while rejecting ambiguous relative paths and malformed URLs', () => {
@@ -29,11 +27,10 @@ describe('media image URL normalization', () => {
     expect(normalizeMediaImageUrl('javascript:alert(1)')).toBeNull();
   });
 
-  it('optimizes only TMDB image paths and preserves other provider URLs', () => {
+  it('optimizes TMDB image paths and rejects legacy provider URLs', () => {
     expect(optimizeImageUrl('https://image.tmdb.org/t/p/original/poster.jpg', 'w342'))
       .toBe('https://image.tmdb.org/t/p/w342/poster.jpg');
-    expect(optimizeImageUrl('https://static.tvmaze.com/uploads/images/original_untouched/show.jpg', 'w342'))
-      .toBe('https://static.tvmaze.com/uploads/images/original_untouched/show.jpg');
+    expect(optimizeImageUrl('https://static.tvmaze.com/uploads/images/original_untouched/show.jpg', 'w342')).toBeNull();
   });
 
   it('tries bounded TMDB sizes before fallback and deduplicates candidates', () => {
@@ -47,7 +44,7 @@ describe('media image URL normalization', () => {
       'https://image.tmdb.org/t/p/w500/poster.jpg',
       'https://image.tmdb.org/t/p/original/poster.jpg',
     ]);
-    expect(candidates[3]).toBe('https://static.tvmaze.com/uploads/images/original_untouched/fallback.jpg');
+    expect(candidates[3]).toMatch(/^data:image\/svg\+xml/);
     expect(candidates[candidates.length - 1]).toMatch(/^data:image\/svg\+xml/);
     expect(new Set(candidates).size).toBe(candidates.length);
   });

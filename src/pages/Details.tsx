@@ -247,7 +247,7 @@ export function Details() {
             src={data?.cover || data?.banner || null}
             fallbackSrc={poster || DEFAULT_BANNER}
             size="w1280"
-            provider={data?.source === 'tvmaze' ? 'tvmaze' : 'tmdb'}
+            provider="tmdb"
             alt=""
             className="kinoma-details-hero__backdrop"
             style={{ display: "block" }}

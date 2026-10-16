@@ -213,25 +213,16 @@ async function request<T>(
   }
   return promise;
 }
-type MovieApiMediaRef =
-  | { provider: 'tmdb'; type: 'movie' | 'tv'; id: number }
-  | { provider: 'tvmaze'; type: 'tv'; id: number };
+type MovieApiMediaRef = { provider: 'tmdb'; type: 'movie' | 'tv'; id: number };
 
 function mediaFromId(id: string): MovieApiMediaRef | null {
   const tmdb = id.match(/^(?:kinoma_)?tmdb_(movie|tv)_(\d+)$/);
-  if (tmdb) return { provider: 'tmdb', type: tmdb[1] as 'movie' | 'tv', id: Number(tmdb[2]) };
-
-  const tvmaze = id.match(/^kinoma_tvmaze_(\d+)$/);
-  if (tvmaze) return { provider: 'tvmaze', type: 'tv', id: Number(tvmaze[1]) };
-
-  return null;
+  if (!tmdb) return null;
+  return { provider: 'tmdb', type: tmdb[1] as 'movie' | 'tv', id: Number(tmdb[2]) };
 }
 
-async function resolveTmdbId(media: MovieApiMediaRef, signal?: AbortSignal): Promise<number | null> {
-  if (media.provider === 'tmdb') return media.id;
-  const details = await request<MovieApiMedia>(`/api/v1/tv/${media.id}`, undefined, { signal }, 300_000);
-  const tmdbId = Number(details.ids?.tmdb || 0);
-  return tmdbId > 0 ? tmdbId : null;
+async function resolveTmdbId(media: MovieApiMediaRef, _signal?: AbortSignal): Promise<number | null> {
+  return media.provider === 'tmdb' ? media.id : null;
 }
 
 function toAnimeItem(item: MovieApiMedia): AnimeItem {
@@ -246,11 +237,10 @@ function toAnimeItem(item: MovieApiMedia): AnimeItem {
     overview?: string;
   };
   const title = item.title || raw.name || raw.original_name || 'Untitled';
-  const imageProvider = item.source === 'tvmaze' ? 'tvmaze' : 'tmdb';
-  const poster = normalizeMediaImageUrl(item.poster, imageProvider)
-    || normalizeMediaImageUrl(raw.poster_path, imageProvider);
-  const backdrop = normalizeMediaImageUrl(item.backdrop, imageProvider)
-    || normalizeMediaImageUrl(raw.backdrop_path, imageProvider);
+  const poster = normalizeMediaImageUrl(item.poster, 'tmdb')
+    || normalizeMediaImageUrl(raw.poster_path, 'tmdb');
+  const backdrop = normalizeMediaImageUrl(item.backdrop, 'tmdb')
+    || normalizeMediaImageUrl(raw.backdrop_path, 'tmdb');
   const releaseDate = item.releaseDate || raw.release_date || raw.first_air_date || undefined;
   const rating = item.rating ?? (Number.isFinite(Number(raw.vote_average)) ? Number(raw.vote_average) : undefined);
   const type = item.type === 'movie' ? 'movie' : 'series';
@@ -289,7 +279,7 @@ function toEpisode(item: any): Episode {
     title: item.title || undefined,
     image: normalizeMediaImageUrl(
       item.image?.original || item.image?.medium || (typeof item.image === 'string' ? item.image : null) || item.still_path || item.stillPath,
-      item.source === 'tvmaze' ? 'tvmaze' : 'tmdb'
+      'tmdb'
     ) || undefined,
     duration: item.runtime || undefined,
     playable: true,
@@ -358,34 +348,17 @@ async function searchAll(query: string, page = 1, signal?: AbortSignal) {
 
 export function pickCanonicalMediaId(
   tmdbResults: MovieApiMedia[],
-  tvmazeMatches: Array<{ id: string; title: string }>,
+  _legacyProviderMatches: Array<{ id: string; title: string }>,
   normalizedTitle: string,
   type?: string
 ) {
+  const matchesType = (item: MovieApiMedia) =>
+    !type || (type === 'movie' ? item.type === 'movie' : type === 'series' ? item.type === 'tv' : true);
   const tmdbExact = tmdbResults.find(item =>
-    slugifyTitle(item.title) === normalizedTitle &&
-    (!type || (type === 'movie' ? item.type === 'movie' : type === 'series' ? item.type === 'tv' : true))
+    slugifyTitle(item.title) === normalizedTitle && matchesType(item)
   );
   if (tmdbExact) return tmdbExact.id;
-
-  const tmdbFallback = tmdbResults.find(item =>
-    !type || (type === 'movie' ? item.type === 'movie' : type === 'series' ? item.type === 'tv' : true)
-  );
-  if (tmdbFallback) return tmdbFallback.id;
-
-  const tvmazeExact = tvmazeMatches.find(item => slugifyTitle(item.title) === normalizedTitle);
-  if ((type === 'series' || !type) && tvmazeExact) {
-    const id = String(tvmazeExact.id);
-    return id.startsWith('kinoma_tvmaze_') ? id : 'kinoma_tvmaze_' + id;
-  }
-
-  const tvmazeFallback = tvmazeMatches[0];
-  if ((type === 'series' || !type) && tvmazeFallback) {
-    const id = String(tvmazeFallback.id);
-    return id.startsWith('kinoma_tvmaze_') ? id : 'kinoma_tvmaze_' + id;
-  }
-
-  return null;
+  return tmdbResults.find(matchesType)?.id ?? null;
 }
 
 export async function resolveMediaIdFromSlug(slug: string, type?: string) {
@@ -397,41 +370,27 @@ export async function resolveMediaIdFromSlug(slug: string, type?: string) {
   if (!normalized) throw new MovieApiError('Invalid title slug.', 400, 'INVALID_TITLE_SLUG');
 
   const candidates = type === 'movie' ? ['movie'] : type === 'series' ? ['tv'] : ['movie', 'tv'];
+  const providerMatches = await Promise.all(candidates.map(async (kind) => {
+    try {
+      const data = await request<any>('/api/v1/tmdb/search/' + kind, { q: decoded, page: 1 }, undefined, 60_000);
+      return (data.results || []).map((item: any): MovieApiMedia => ({
+        id: 'tmdb_' + kind + '_' + item.id,
+        type: kind === 'movie' ? 'movie' : 'tv',
+        title: item.title || item.name || item.original_title || item.original_name || 'Untitled',
+        poster: item.poster_path ? 'https://image.tmdb.org/t/p/w500' + item.poster_path : null,
+        backdrop: item.backdrop_path ? 'https://image.tmdb.org/t/p/w1280' + item.backdrop_path : null,
+        releaseDate: item.release_date || item.first_air_date || null,
+        overview: item.overview || null,
+        rating: Number.isFinite(Number(item.vote_average)) ? Number(item.vote_average) : null,
+        ids: { tmdb: Number(item.id) },
+        source: 'tmdb'
+      }));
+    } catch { return [] as MovieApiMedia[]; }
+  }));
 
-  const [providerMatches, tvmazeMatches] = await Promise.all([
-    Promise.all(candidates.map(async (kind) => {
-      try {
-        const data = await request<any>('/api/v1/tmdb/search/' + kind, { q: decoded, page: 1 }, undefined, 60_000);
-        return (data.results || []).map((item: any): MovieApiMedia => ({
-          id: 'tmdb_' + kind + '_' + item.id,
-          type: kind === 'movie' ? 'movie' : 'tv',
-          title: item.title || item.name || item.original_title || item.original_name || 'Untitled',
-          poster: item.poster_path ? 'https://image.tmdb.org/t/p/w500' + item.poster_path : null,
-          backdrop: item.backdrop_path ? 'https://image.tmdb.org/t/p/w1280' + item.backdrop_path : null,
-          releaseDate: item.release_date || item.first_air_date || null,
-          overview: item.overview || null,
-          rating: Number.isFinite(Number(item.vote_average)) ? Number(item.vote_average) : null,
-          ids: { tmdb: Number(item.id) },
-          source: 'tmdb'
-        }));
-      } catch { return [] as MovieApiMedia[]; }
-    })),
-    (type === 'series' || !type) ? (async () => {
-      try {
-        const data = await request<any>('/api/v1/tv/search', { q: decoded, page: 1, limit: 20 }, undefined, 60_000);
-        return (data.results || []).map((item: any) => ({
-          id: String(item.id || ''),
-          title: item.title || item.name || 'Untitled'
-        })).filter((item: { id: string; title: string }) => item.id);
-      } catch { return [] as Array<{ id: string; title: string }>; }
-    })() : Promise.resolve([] as Array<{ id: string; title: string }>)
-  ]);
-
-  const tmdbResults = providerMatches.flat();
-  const resolved = pickCanonicalMediaId(tmdbResults, tvmazeMatches, normalized, type);
+  const resolved = pickCanonicalMediaId(providerMatches.flat(), [], normalized, type);
   if (resolved) return resolved;
-
-  throw new MovieApiError('Unable to resolve this title.', 404, 'TITLE_NOT_FOUND');
+  throw new MovieApiError('Unable to resolve this title in TMDB.', 404, 'TITLE_NOT_FOUND');
 }
 
 export const api = {
@@ -470,9 +429,9 @@ export const api = {
   },
 
   async getAiringSchedule() {
-    const data = await request<any>('/api/v1/airing/today', { country: 'US' }, undefined, 300_000);
-    const results = (data.episodes || []).map((episode: any) => episode.show).filter(Boolean).map(toAnimeItem);
-    return { schedule: data.episodes || [], results };
+    const data = await request<MovieApiPage>('/api/v1/airing/upcoming', undefined, undefined, 300_000);
+    const results = (data.results || []).map(toAnimeItem);
+    return { schedule: [], results };
   },
 
   async getAiringToday() {
@@ -522,47 +481,25 @@ export const api = {
 
   async getDetails(id: string, signal?: AbortSignal): Promise<AnimeDetails> {
     const media = mediaFromId(id);
-    if (!media) throw new MovieApiError('This title is not a MovieApi media ID.', 400, 'INVALID_MEDIA_ID');
-
-    const path = media.provider === 'tvmaze'
-      ? `/api/v1/tv/${media.id}`
-      : `/api/v1/details/${media.type === 'movie' ? 'movie' : 'tv'}/${media.id}`;
+    if (!media) throw new MovieApiError('This title is not a TMDB media ID.', 400, 'INVALID_MEDIA_ID');
+    const path = `/api/v1/details/${media.type === 'movie' ? 'movie' : 'tv'}/${media.id}`;
     const data = await request<MovieApiMedia>(path, undefined, { signal });
-    if (media.provider === 'tmdb' && media.type === 'tv' && !data.overview && data.ids?.tvmaze) {
-      try {
-        const tvmaze = await request<MovieApiMedia>(`/api/v1/tv/${data.ids.tvmaze}`, undefined, { signal }, 300_000);
-        return toDetails({
-          ...data,
-          overview: data.overview || tvmaze.overview || null,
-          poster: data.poster || tvmaze.poster || null,
-          backdrop: data.backdrop || tvmaze.backdrop || null,
-          genres: data.genres?.length ? data.genres : (tvmaze.genres || []),
-          runtime: data.runtime || tvmaze.runtime || null,
-        });
-      } catch {
-        // TMDB remains the authoritative detail response when the optional fallback is unavailable.
-      }
-    }
     return toDetails(data);
   },
 
   async getSeasons(id: string, signal?: AbortSignal) {
     const media = mediaFromId(id);
     if (!media || media.type !== 'tv') return { seasons: [] as AnimeSeasonItem[] };
-
-    if (media.provider === 'tvmaze') {
-      const data = await request<{ seasons: any[] }>(`/api/v1/tv/${media.id}/seasons`, undefined, { signal });
-      return {
-        seasons: (data.seasons || []).map((season: any): AnimeSeasonItem => ({
-          seasonNumber: Number(season.number || 1),
-          animeId: id,
-          title: season.name || `Season ${season.number || 1}`,
-          episodeCount: Number(season.episodeOrder || 0),
-        })),
-      };
+    const tmdb = await request<MovieApiMedia & { numberOfSeasons?: number; seasons?: any[] }>(`/api/v1/tmdb/tv/${media.id}`, undefined, { signal }, 300_000);
+    const seasons = (tmdb.seasons || []).filter((season: any) => Number(season.seasonNumber ?? season.season_number ?? season.number) > 0);
+    if (seasons.length) {
+      return { seasons: seasons.map((season: any): AnimeSeasonItem => ({
+        seasonNumber: Number(season.seasonNumber ?? season.season_number ?? season.number),
+        animeId: id,
+        title: season.name || `Season ${season.seasonNumber ?? season.season_number ?? season.number}`,
+        episodeCount: Number(season.episodeCount ?? season.episode_count ?? 0),
+      })) };
     }
-
-    const tmdb = await request<MovieApiMedia & { numberOfSeasons?: number }>(`/api/v1/tmdb/tv/${media.id}`, undefined, { signal }, 300_000);
     const count = Math.max(0, Number(tmdb.numberOfSeasons || 0));
     return { seasons: Array.from({ length: count }, (_, index): AnimeSeasonItem => ({
       seasonNumber: index + 1, animeId: id, title: `Season ${index + 1}`, episodeCount: 0
@@ -572,31 +509,16 @@ export const api = {
   async getSeasonEpisodes(id: string, seasonNumber: number, signal?: AbortSignal) {
     const media = mediaFromId(id);
     if (!media || media.type !== 'tv') return { anime_id: id, season_number: seasonNumber, season_anime_id: id, episodes: [] as Episode[] };
-
-    let data: { episodes: any[] };
-    if (media.provider === 'tvmaze') {
-      data = await request<{ episodes: any[] }>(`/api/v1/tv/${media.id}/season/${seasonNumber}`, undefined, { signal }, 300_000);
-    } else {
-      data = await request<{ episodes: any[] }>(`/api/v1/tmdb/tv/${media.id}/season/${seasonNumber}`, undefined, { signal }, 300_000);
-    }
-
+    const data = await request<{ episodes: any[] }>(`/api/v1/tmdb/tv/${media.id}/season/${seasonNumber}`, undefined, { signal }, 300_000);
     return {
       anime_id: id, season_number: seasonNumber, season_anime_id: id,
-      episodes: (data.episodes || [])
-        .map((ep) => ({
-          id: String(ep.id), number: Number(ep.number || 1), title: ep.title || `Episode ${ep.number || 1}`,
-          synopsis: ep.synopsis || ep.overview || '',
-          image: optimizeImageUrl(
-            normalizeMediaImageUrl(
-              ep.image?.original || ep.image?.medium || (typeof ep.image === 'string' ? ep.image : null) || ep.still_path || ep.stillPath,
-              media.provider === 'tvmaze' ? 'tvmaze' : 'tmdb'
-            ),
-            'w500'
-          ) || '',
-          duration: Number(ep.runtime || ep.duration || 0) || undefined,
-          rating: Number(ep.rating ?? ep.vote_average ?? 0) || undefined
-        }))
-        .sort((a, b) => a.number - b.number)
+      episodes: (data.episodes || []).map((ep) => ({
+        id: String(ep.id), number: Number(ep.number || 1), title: ep.title || `Episode ${ep.number || 1}`,
+        synopsis: ep.synopsis || ep.overview || '',
+        image: optimizeImageUrl(normalizeMediaImageUrl(ep.image?.original || ep.image?.medium || (typeof ep.image === 'string' ? ep.image : null) || ep.still_path || ep.stillPath, 'tmdb'), 'w500') || '',
+        duration: Number(ep.runtime || ep.duration || 0) || undefined,
+        rating: Number(ep.rating ?? ep.vote_average ?? 0) || undefined
+      })).sort((a, b) => a.number - b.number)
     };
   },
 
