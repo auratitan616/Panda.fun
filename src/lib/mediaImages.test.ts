@@ -6,9 +6,8 @@ import {
 } from './mediaImages';
 
 describe('media image URL normalization', () => {
-  it('normalizes HTTP provider URLs to HTTPS without altering their path', () => {
-    expect(normalizeMediaImageUrl('http://static.tvmaze.com/uploads/images/medium_portrait/show.jpg'))
-      .toBe('https://static.tvmaze.com/uploads/images/medium_portrait/show.jpg');
+  it('rejects legacy TVMaze artwork URLs', () => {
+    expect(normalizeMediaImageUrl('http://static.tvmaze.com/uploads/images/medium_portrait/show.jpg')).toBeNull();
   });
 
   it('constructs a TMDB URL for a raw poster path', () => {
@@ -16,9 +15,8 @@ describe('media image URL normalization', () => {
       .toBe('https://image.tmdb.org/t/p/original/abc123.jpg');
   });
 
-  it('constructs a TVMaze URL for a known relative upload path', () => {
-    expect(normalizeMediaImageUrl('/uploads/images/original_untouched/1/2/show.jpg'))
-      .toBe('https://static.tvmaze.com/uploads/images/original_untouched/1/2/show.jpg');
+  it('does not treat legacy provider upload paths as TMDB artwork', () => {
+    expect(normalizeMediaImageUrl('/uploads/images/original_untouched/1/2/show.jpg')).toBe('/uploads/images/original_untouched/1/2/show.jpg');
   });
 
   it('preserves same-origin frontend paths while rejecting ambiguous relative paths and malformed URLs', () => {
