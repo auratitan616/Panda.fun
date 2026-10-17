@@ -9373,3 +9373,128 @@ body,
   }
   .panda-mobile-bottom-nav__item.is-active { background: rgba(184,77,65,.12); }
 }
+
+
+/* Android TV 10-foot UI layer — scoped to the native TV WebView only. */
+html.tv-mode,
+html.tv-mode body,
+html.tv-mode #root {
+  width: 100%;
+  min-width: 960px;
+  min-height: 100%;
+  background: #000 !important;
+  color: #fff;
+  scroll-behavior: auto;
+}
+html.tv-mode body { font-size: 18px; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+html.tv-mode *, html.tv-mode *::before, html.tv-mode *::after { scroll-behavior: auto !important; }
+html.tv-mode .panda-mobile-header,
+html.tv-mode .panda-mobile-bottom-nav { display: none !important; }
+
+html.tv-mode .panda-app-shell,
+html.tv-mode .kinoma-app-shell {
+  min-height: 100vh; min-height: 100dvh; background: #000 !important; --sidebar-width: 82px;
+}
+html.tv-mode .kinoma-sidebar {
+  width: 82px !important; min-height: 100vh; min-height: 100dvh; padding: 26px 12px;
+  background: rgba(7,8,12,.97) !important; border-right: 1px solid rgba(255,255,255,.11);
+  box-shadow: 18px 0 42px rgba(0,0,0,.24); backdrop-filter: blur(18px);
+  transition: width 180ms ease, padding 180ms ease, box-shadow 180ms ease;
+  z-index: 50; overflow: hidden;
+}
+html.tv-mode .kinoma-sidebar:hover,
+html.tv-mode .kinoma-sidebar:focus-within,
+html.tv-mode .kinoma-sidebar.is-expanded { width: 282px !important; box-shadow: 24px 0 58px rgba(0,0,0,.7); }
+html.tv-mode .kinoma-sidebar__brand { min-height: 58px; margin: 0 0 30px; outline-offset: 5px; }
+html.tv-mode .kinoma-sidebar__nav { gap: 10px; }
+html.tv-mode .kinoma-sidebar__item {
+  min-height: 58px; padding: 14px 16px; gap: 20px; border-radius: 15px;
+  color: rgba(255,255,255,.7); font-size: 20px; font-weight: 600; white-space: nowrap;
+  outline-offset: 4px; transition: color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+html.tv-mode .kinoma-sidebar.is-collapsed .kinoma-sidebar__item { justify-content: center; padding-inline: 0; }
+html.tv-mode .kinoma-sidebar.is-collapsed .kinoma-sidebar__item > span,
+html.tv-mode .kinoma-sidebar.is-collapsed .kinoma-sidebar__about-submenu { opacity: 0; pointer-events: none; }
+html.tv-mode .kinoma-sidebar__item.is-active,
+html.tv-mode .kinoma-sidebar__item:focus-visible,
+html.tv-mode .kinoma-sidebar__about-subitem:focus-visible {
+  color: #fff !important;
+  background: linear-gradient(100deg, rgba(0,102,255,.35), rgba(230,0,122,.2)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), 0 0 22px rgba(0,102,255,.22);
+}
+html.tv-mode .kinoma-sidebar__item:focus-visible { transform: scale(1.035); }
+html.tv-mode .kinoma-sidebar [data-tooltip]::after { display: none !important; }
+html.tv-mode .panda-app-content {
+  min-width: 0; width: calc(100% - 82px); margin-left: 82px; background: #000 !important;
+}
+html.tv-mode .kinoma-app-main { min-height: 100vh; min-height: 100dvh; outline: none; background: #000 !important; }
+
+html.tv-mode :is(button, a, input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"])) { outline-offset: 5px; }
+html.tv-mode :is(button, a, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid #fff !important; box-shadow: 0 0 0 5px rgba(0,102,255,.38), 0 0 24px rgba(0,102,255,.24);
+  position: relative; z-index: 4;
+}
+html.tv-mode .kinoma-home,
+html.tv-mode .kinoma-details-page,
+html.tv-mode .panda-home-v2,
+html.tv-mode .kinoma-app-main > * { background-color: #000 !important; }
+html.tv-mode .kinoma-home__inner,
+html.tv-mode .panda-home-v2__inner {
+  width: min(100% - 84px, 1760px) !important; max-width: 1760px; margin-inline: auto;
+}
+html.tv-mode .kinoma-home-hero--trailer {
+  min-height: clamp(540px, 68vh, 760px); border-radius: 0 !important; background: #000 !important; overflow: hidden;
+}
+html.tv-mode .kinoma-home-hero__trailer-bg { background: #000 !important; }
+html.tv-mode .kinoma-home-hero__banner-image { object-fit: cover; }
+html.tv-mode .kinoma-home-hero__copy h1,
+html.tv-mode .kinoma-home-hero__copy h2 {
+  max-width: 760px; font-size: clamp(48px, 4.2vw, 72px) !important; line-height: 1.06; text-wrap: balance;
+}
+html.tv-mode .kinoma-home-hero__copy p { max-width: 720px; font-size: 19px; line-height: 1.55; }
+html.tv-mode .kinoma-home-section,
+html.tv-mode .panda-home-v2__section { margin-top: 34px; }
+html.tv-mode .kinoma-home-section__title,
+html.tv-mode .panda-home-v2__section-title { font-size: 28px !important; line-height: 1.15; color: #fff; }
+
+html.tv-mode .panda-content-card {
+  transform-origin: center center; border-radius: 12px; overflow: visible;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+html.tv-mode .panda-content-card__link { border-radius: 12px; overflow: hidden; }
+html.tv-mode .panda-content-card__image-wrap,
+html.tv-mode .panda-content-card__image-wrap img { border-radius: 12px; }
+html.tv-mode .panda-content-card:focus-within {
+  z-index: 5; transform: scale(1.075); filter: drop-shadow(0 16px 30px rgba(0,0,0,.85));
+}
+html.tv-mode .panda-content-card:focus-within .panda-content-card__link { outline: 3px solid #fff; outline-offset: 1px; }
+html.tv-mode .panda-content-card__title { color: #fff; font-size: 17px; line-height: 1.3; }
+
+html.tv-mode .kinoma-details-hero { min-height: 780px; background: #000 !important; }
+html.tv-mode .kinoma-details-hero__scrim {
+  background: linear-gradient(90deg, #000 5%, rgba(0,0,0,.84) 34%, rgba(0,0,0,.22) 75%, rgba(0,0,0,.15) 100%),
+    linear-gradient(0deg, #000 0%, transparent 42%) !important;
+}
+html.tv-mode .kinoma-details-hero h1,
+html.tv-mode .kinoma-details-hero__copy h1 {
+  max-width: 760px; font-size: clamp(50px, 4.4vw, 74px) !important; line-height: 1.06;
+}
+html.tv-mode .kinoma-details-hero p { max-width: 690px; font-size: 18px; line-height: 1.55; }
+html.tv-mode .kinoma-details-hero :is(button, a) { min-height: 54px; }
+html.tv-mode .kinoma-details-page :is(button, a, [role="tab"]) { min-height: 48px; font-size: 17px; }
+html.tv-mode .kinoma-details-page :is(.kinoma-details-tabs, .kinoma-player-tabs) { gap: 12px; }
+html.tv-mode .kinoma-details-page :is(.kinoma-episode-card, .kinoma-player-episode, [class*="episode-card"]) { border-radius: 10px; }
+html.tv-mode input,
+html.tv-mode select,
+html.tv-mode textarea {
+  min-height: 56px; font-size: 20px; background: rgba(255,255,255,.075); border-color: rgba(255,255,255,.16);
+}
+html.tv-mode .kinoma-details-page,
+html.tv-mode .kinoma-search-page,
+html.tv-mode .kinoma-library-page { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.tv-mode *, html.tv-mode *::before, html.tv-mode *::after {
+    transition-duration: .01ms !important; animation-duration: .01ms !important;
+  }
+}
