@@ -20,7 +20,7 @@ export const ITEMS = [
   { href: '/settings', label: 'Settings', Icon: Settings },
 ];
 
-const TV_ITEMS = [
+const TV_ITEMS: Array<{ href: string; label: string; Icon: typeof House; disabled?: boolean }> = [
   { href: '/connect-phone', label: 'Connect Phone', Icon: Smartphone, disabled: true },
   { href: '/search', label: 'Search', Icon: Search },
   { href: '/home', label: 'Home', Icon: House },
