@@ -9645,7 +9645,7 @@ html.tv-mode .panda-content-card:focus-within { scroll-margin-inline: 32px; }
 .kinoma-search-page .kinoma-search-control__submit::before {
   content: "";
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: -1px;
   padding: 1px;
   border-radius: inherit;
@@ -9704,4 +9704,56 @@ html.tv-mode .panda-content-card:focus-within { scroll-margin-inline: 32px; }
   .kinoma-search-page .kinoma-search-control__submit::before,
   .kinoma-search-page .kinoma-search-control__sheen { animation: none !important; }
   .kinoma-search-page .kinoma-search-control__submit::before { background: linear-gradient(110deg, transparent, rgba(255,255,255,.65), transparent); }
+}
+
+
+/* Search loading: Thinking Orbs stays on the page surface, not inside a fake card. */
+.kinoma-search-page .kinoma-search-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: min(100%, 720px);
+  min-height: 208px;
+  margin: 14px 0 0;
+  padding: 30px 12px;
+  color: rgba(245, 245, 247, .92);
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+.kinoma-search-page .kinoma-search-loading > canvas {
+  display: block;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+}
+.kinoma-search-page .kinoma-search-loading__copy {
+  display: grid;
+  gap: 7px;
+}
+.kinoma-search-page .kinoma-search-loading__copy > span {
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+.kinoma-search-page .kinoma-search-loading__copy p {
+  color: rgba(235, 235, 240, .48);
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .kinoma-search-page .kinoma-search-loading {
+    min-height: 180px;
+    gap: 12px;
+    padding-inline: 0;
+  }
+  .kinoma-search-page .kinoma-search-loading > canvas {
+    flex-basis: 56px;
+    width: 56px;
+    height: 56px;
+  }
+  .kinoma-search-page .kinoma-search-loading__copy > span { font-size: 13px; }
+  .kinoma-search-page .kinoma-search-loading__copy p { font-size: 11px; }
 }

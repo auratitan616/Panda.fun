@@ -45,13 +45,22 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(mobileHome).toContain('viewport.scrollLeft += cardCenter - viewportCenter');
   });
 
-  it('keeps search compact and removes the mascot in favor of the animated metal button', () => {
+  it('uses the Thinking Orbs searching state instead of a generic loading card', () => {
+    expect(search).toContain("import { ThinkingOrb } from 'thinking-orbs'");
+    expect(search).toContain('<ThinkingOrb state="searching"');
+    expect(search).toContain('kinoma-search-loading');
+    expect(search).not.toContain('<h3>Searching…</h3>');
+    expect(read('../../index.css')).toContain('.kinoma-search-loading');
+  });
+
+  it('keeps search compact, mascot-free, and refined with a visible metal border beam', () => {
     expect(search).not.toContain('panda-search-companion');
     expect(search).toContain('Search by title, genre, or cast.');
     expect(search).toContain('kinoma-search-control__sheen');
     expect(search).toContain('<ArrowRight size={15}');
     expect(read('../../index.css')).toContain('panda-search-beam-spin 1.96s linear infinite');
     expect(read('../../index.css')).toContain('panda-search-metal-sweep');
+    expect(read('../../index.css')).toContain('z-index: 0;');
     expect(read('../../index.css')).toContain('prefers-reduced-motion: reduce');
   });
 
