@@ -23,6 +23,9 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(mobileShell).toContain('.panda-app-shell--player .panda-mobile-header');
     expect(mobileShell).toContain('height: 100dvh !important');
     expect(mobileShell).toContain('width: 100vw !important');
+    expect(mobileShell).toContain('display: block !important;');
+    expect(mobileShell).toContain('flex: none !important;');
+    expect(mobileShell).toContain('.panda-mobile-featured__loading');
   });
 
   it('includes Top 10 and the planned catalogue rows without replacing the existing API', () => {

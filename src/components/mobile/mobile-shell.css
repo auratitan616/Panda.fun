@@ -243,3 +243,55 @@
   .panda-mobile-bottom-nav__item,
   .panda-mobile-bottom-nav__icon { transition: none !important; }
 }
+
+
+/* Mobile width guard: prevent the legacy desktop shell from leaving an empty left column while home data loads. */
+@media (max-width: 767px) {
+  .panda-app-shell.kinoma-app-shell {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .panda-app-shell .panda-app-content {
+    display: block !important;
+    flex: none !important;
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .panda-app-shell .kinoma-app-main {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .panda-mobile-home,
+  .panda-mobile-featured,
+  .panda-mobile-featured__viewport {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .panda-mobile-featured__loading {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: center !important;
+    width: 100% !important;
+    padding-inline: 12vw !important;
+    margin-inline: 0 !important;
+  }
+}
