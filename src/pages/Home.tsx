@@ -11,6 +11,7 @@ import { buildDetailsHref, buildWatchHref } from '../lib/mediaRoute';
 import { optimizeImageUrl } from '../lib/mediaImages';
 import { ModernContinueWatching } from '../components/ui/modern/ModernContinueWatching';
 import '../styles/panda-home.css';
+import { MobileHome } from './MobileHome';
 
 type RailKind = 'trending' | 'streamingNetflix' | 'streamingDisney' | 'popular' | 'tv' | 'movie' | 'airing';
 
@@ -317,6 +318,11 @@ export function Home() {
   }, []);
 
   return (
+    <>
+      <div className="panda-mobile-home-only">
+        <MobileHome items={[...(featured ? [featured] : []), ...trending, ...popularMovies, ...popularTv]} />
+      </div>
+      <div className="panda-desktop-home-only">
     <main className="kinoma-home">
       <div className="kinoma-home__ambient" aria-hidden="true">
         <span className="kinoma-home__ambient-orb kinoma-home__ambient-orb--one" />
@@ -465,5 +471,7 @@ export function Home() {
         </div>
       </div>
     </main>
+      </div>
+    </>
   );
 }
