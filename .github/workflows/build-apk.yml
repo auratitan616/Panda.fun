@@ -113,7 +113,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p android/keystore
-          printf '%s' "$KINOMA_KEYSTORE_BASE64" | base64 --decode > android/keystore/panda-release.keystore
+          printf '%s' "$KINOMA_KEYSTORE_BASE64" | base64 --decode > android/keystore/kinoma-release.keystore
           test -s android/keystore/panda-release.keystore
           chmod 600 android/keystore/panda-release.keystore
 
