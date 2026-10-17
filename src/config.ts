@@ -1,22 +1,38 @@
-import { z } from "zod";
-
-const envSchema = z.object({
-  MOVIEAPI_API_KEYS: z.string().optional().default(""),
-  MOVIEAPI_AUTH_REQUIRED: z.string().optional().default("false").transform((v) => v.toLowerCase() === "true"),
-  MOVIEAPI_RATE_LIMIT: z.coerce.number().int().positive().default(120),
-  MOVIEAPI_RATE_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
-  MOVIEAPI_TVMAZE_BASE_URL: z.string().url().default("https://api.tvmaze.com"),
-  MOVIEAPI_TVMAZE_USER_AGENT: z.string().min(1).default("MovieApi/0.9.0 (Panda.fun)"),
-  MOVIEAPI_TVMAZE_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),
-  MOVIEAPI_TMDB_ACCESS_TOKEN: z.string().optional().default(""),
-  MOVIEAPI_TMDB_BASE_URL: z.string().url().default("https://api.themoviedb.org/3"),
-  MOVIEAPI_TMDB_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),
-  MOVIEAPI_VIDY_BASE_URL: z.string().url().default("https://www.vidy.st"),
-  MOVIEAPI_VIDY_MOVIE_PATH: z.string().min(1).default("/movie/{tmdbId}"),
-  MOVIEAPI_VIDY_TV_PATH: z.string().min(1).default("/tv/{tmdbId}/{season}/{episode}"),
-  MOVIEAPI_CORS_ORIGIN: z.string().min(1).default("*"),
-  PORT: z.coerce.number().int().positive().default(3000)
-});
+function parseConfigEnv(env: Record<string, string | undefined>) {
+  const value = (key: string, fallback: string) => env[key] ?? fallback;
+  const number = (key: string, fallback: number, max = Number.MAX_SAFE_INTEGER) => {
+    const parsed = Number(value(key, String(fallback)));
+    if (!Number.isInteger(parsed) || parsed <= 0 || parsed > max) throw new Error(`Invalid positive integer for ${key}`);
+    return parsed;
+  };
+  const url = (key: string, fallback: string) => {
+    const candidate = value(key, fallback);
+    try { new URL(candidate); } catch { throw new Error(`Invalid URL for ${key}`); }
+    return candidate;
+  };
+  const userAgent = value("MOVIEAPI_TVMAZE_USER_AGENT", "MovieApi/0.9.0 (Panda.fun)");
+  const moviePath = value("MOVIEAPI_VIDY_MOVIE_PATH", "/movie/{tmdbId}");
+  const tvPath = value("MOVIEAPI_VIDY_TV_PATH", "/tv/{tmdbId}/{season}/{episode}");
+  const corsOrigin = value("MOVIEAPI_CORS_ORIGIN", "*");
+  if (!userAgent.trim() || !moviePath || !tvPath || !corsOrigin) throw new Error("Invalid empty configuration value");
+  return {
+    MOVIEAPI_API_KEYS: value("MOVIEAPI_API_KEYS", ""),
+    MOVIEAPI_AUTH_REQUIRED: value("MOVIEAPI_AUTH_REQUIRED", "false").toLowerCase() === "true",
+    MOVIEAPI_RATE_LIMIT: number("MOVIEAPI_RATE_LIMIT", 120),
+    MOVIEAPI_RATE_WINDOW_MS: number("MOVIEAPI_RATE_WINDOW_MS", 60_000),
+    MOVIEAPI_TVMAZE_BASE_URL: url("MOVIEAPI_TVMAZE_BASE_URL", "https://api.tvmaze.com"),
+    MOVIEAPI_TVMAZE_USER_AGENT: userAgent,
+    MOVIEAPI_TVMAZE_TIMEOUT_MS: number("MOVIEAPI_TVMAZE_TIMEOUT_MS", 8_000, 30_000),
+    MOVIEAPI_TMDB_ACCESS_TOKEN: value("MOVIEAPI_TMDB_ACCESS_TOKEN", ""),
+    MOVIEAPI_TMDB_BASE_URL: url("MOVIEAPI_TMDB_BASE_URL", "https://api.themoviedb.org/3"),
+    MOVIEAPI_TMDB_TIMEOUT_MS: number("MOVIEAPI_TMDB_TIMEOUT_MS", 8_000, 30_000),
+    MOVIEAPI_VIDY_BASE_URL: url("MOVIEAPI_VIDY_BASE_URL", "https://www.vidy.st"),
+    MOVIEAPI_VIDY_MOVIE_PATH: moviePath,
+    MOVIEAPI_VIDY_TV_PATH: tvPath,
+    MOVIEAPI_CORS_ORIGIN: corsOrigin,
+    PORT: number("PORT", 3000)
+  };
+}
 
 export type Config = {
   apiKeys: Set<string>;
