@@ -48,7 +48,7 @@ function EmptyState({ tab, onBrowse }: { tab: Tab; onBrowse: () => void }) {
   );
 }
 
-function LibraryPosterCard({ item, onRemove }: { item: LibraryItem; onRemove: () => void }) {
+function LibraryPosterCard({ item, onRemove }: { key?: React.Key; item: LibraryItem; onRemove: () => void }) {
   const mediaType = item.id.startsWith('tmdb_movie_') ? 'movie' : 'series';
 
   return (
