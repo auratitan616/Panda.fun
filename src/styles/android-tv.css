@@ -623,7 +623,7 @@ html.tv-mode .panda-tv-app-shell .kinoma-search-recent__items button {
   transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 html.tv-mode .panda-tv-app-shell .kinoma-search-recent__history-icon {
-  display: block;
+  display: block !important;
   flex: 0 0 auto;
   color: #fff;
   opacity: .88;
