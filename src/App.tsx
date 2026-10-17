@@ -45,6 +45,7 @@ import { usePWAUpdate } from './lib/usePWAUpdate';
 import { PandaIntro, shouldShowPandaIntro } from './components/intro/PandaIntro';
 import { isRecoverableChunkLoadError } from './lib/appReliability';
 import './components/intro/panda-intro.css';
+import { handleTVRemoteKey } from './lib/tvRemoteNavigation';
 
 function AnimatedRoutes() {
   const [location] = useLocation();
@@ -141,6 +142,16 @@ function MainAppShell() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // One document-level owner for directional focus in the Android TV WebView.
+    // Text inputs and embedded media are explicitly excluded by the handler.
+    const onRemoteKeyDown = (event: KeyboardEvent) => {
+      handleTVRemoteKey(event);
+    };
+    document.addEventListener('keydown', onRemoteKeyDown, true);
+    return () => document.removeEventListener('keydown', onRemoteKeyDown, true);
+  }, []);
+
   return (
     <SWRConfig value={{ provider: localCache.getSwrStorageProvider(), revalidateOnFocus: false, revalidateIfStale: false, dedupingInterval: 30000 }}>
       <AuthProvider>
