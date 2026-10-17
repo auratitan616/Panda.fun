@@ -60,17 +60,17 @@
 .panda-mobile-featured__track {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: max-content;
   min-width: 100%;
-  padding-inline: 12vw;
+  padding-inline: 16vw;
 }
 
 .panda-mobile-featured__card {
   position: relative;
   display: block;
-  flex: 0 0 76vw;
-  width: 76vw;
+  flex: 0 0 68vw;
+  width: 68vw;
   max-width: 560px;
   aspect-ratio: 16 / 9;
   min-height: 0;
@@ -80,10 +80,11 @@
   color: #fff;
   background: #080808;
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
+  border-radius: 14px;
   scroll-snap-align: center;
+  scroll-snap-stop: always;
   text-decoration: none;
-  transform: scale(.92);
+  transform: scale(.94);
   opacity: .72;
   transition: transform 220ms ease, opacity 220ms ease, border-color 220ms ease;
   -webkit-tap-highlight-color: transparent;
@@ -130,7 +131,7 @@
   padding: 24px 12px 10px;
   overflow: hidden;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 750;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -164,11 +165,11 @@
   grid-template-columns: 1fr;
   place-items: center;
   width: 100%;
-  padding: 6px 12vw 12px;
+  padding: 6px 16vw 12px;
 }
 .panda-mobile-featured__loading span {
   display: block;
-  width: 76vw;
+  width: 68vw;
   aspect-ratio: 16 / 9;
   border: 1px solid rgba(255,255,255,.07);
   border-radius: 12px;
