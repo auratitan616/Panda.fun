@@ -9350,3 +9350,31 @@ body,
   }
   .kinoma-privacy-page .kinoma-privacy-page__body ul { font-size: 12px; }
 }
+
+
+/* Shared mobile dock: one understated arch and the same three destinations on every route. */
+@media (max-width: 767px) {
+  .panda-mobile-bottom-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-radius: 18px 18px 22px 22px;
+    isolation: isolate;
+  }
+  .panda-mobile-bottom-nav::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -1px;
+    right: -1px;
+    top: -1px;
+    height: 12px;
+    border-top: 1px solid rgba(246, 242, 238, 0.12);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    pointer-events: none;
+  }
+  .panda-mobile-bottom-nav__item.is-active { background: rgba(184,77,65,.12); }
+}
+.panda-mobile-home-only { display: none; }
+@media (max-width: 767px) {
+  .panda-mobile-home-only { display: block; }
+  .panda-desktop-home-only { display: none !important; }
+}
