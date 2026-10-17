@@ -11,6 +11,8 @@ const search = read('../../pages/Search.tsx');
 describe('MYpanda.fun mobile shell contract', () => {
   it('uses a shared mobile header and route-aware three-item navigation', () => {
     expect(layout).toContain('panda-mobile-header');
+    expect(layout).toContain('aria-label="Profile"');
+    expect(layout).not.toContain('aria-label="Search movies and shows"');
     expect(layout).toContain('panda-mobile-bottom-nav');
     expect(layout).toContain("location.startsWith('/watch/')");
     expect(layout).toContain("href === '/library' ? 'Library' : label");
