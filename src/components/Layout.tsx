@@ -39,7 +39,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isPlayerRoute = location.startsWith('/watch/');
   const navItems = tvMode ? TV_ITEMS : ITEMS;
 
-  useEffect(() => { mainRef.current?.focus({ preventScroll: true }); }, [location]);
+  useEffect(() => {
+    // TV screens manage their own initial focus so the remote lands on the
+    // primary action/search field instead of an invisible main landmark.
+    if (!tvMode) mainRef.current?.focus({ preventScroll: true });
+  }, [location, tvMode]);
   useEffect(() => () => { if (collapseTimer.current !== null) window.clearTimeout(collapseTimer.current); }, []);
 
   const expand = () => {
