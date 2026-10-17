@@ -31,13 +31,13 @@ export function MobileHome({ items }: MobileHomeProps) {
   const updateActiveCard = () => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const center = viewport.scrollLeft + viewport.clientWidth / 2;
+    const viewportCenter = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
     const cards = Array.from(viewport.querySelectorAll<HTMLElement>('.panda-mobile-featured__card'));
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
     cards.forEach((card, index) => {
-      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-      const distance = Math.abs(cardCenter - center);
+      const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - viewportCenter);
       if (distance < closestDistance) { closestDistance = distance; closestIndex = index; }
     });
     setActiveIndex(current => current === closestIndex ? current : closestIndex);
