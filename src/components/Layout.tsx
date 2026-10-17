@@ -27,7 +27,7 @@ const TV_ITEMS: Array<{ href: string; label: string; Icon: typeof House; disable
   { href: '/search?type=series', label: 'TV', Icon: Tv },
   { href: '/search?type=movie', label: 'Movies', Icon: Popcorn },
   { href: '/search?keyword=sports', label: 'Sports', Icon: PersonStanding },
-  { href: '/search', label: 'Categories', Icon: Grid2X2 },
+  { href: '/search?view=categories', label: 'Categories', Icon: Grid2X2 },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -89,7 +89,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 (href === '/profile' && pathname === '/profile') ||
                 (href === '/library' && (pathname === '/library' || pathname === '/history')) ||
                 (href === '/settings' && pathname === '/settings') ||
-                (href === '/search' && pathname === '/search' && !query.get('keyword')) ||
+                (href === '/search' && pathname === '/search' && query.get('view') !== 'categories') ||
+                (href === '/search?view=categories' && pathname === '/search' && query.get('view') === 'categories') ||
                 (href === '/search?type=series' && pathname === '/search' && query.get('type') === 'series') ||
                 (href === '/search?type=movie' && pathname === '/search' && query.get('type') === 'movie') ||
                 (href === '/search?keyword=sports' && pathname === '/search' && query.get('keyword') === 'sports');
