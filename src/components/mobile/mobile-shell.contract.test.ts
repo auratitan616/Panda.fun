@@ -30,6 +30,8 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(mobileHome).toContain('<ModernContinueWatching />');
     expect(mobileHome).toContain('buildDetailsHref');
     expect(homeStyles).toContain('aspect-ratio:16/9');
+    expect(mobileHome).toContain('const viewportRect = viewport.getBoundingClientRect()');
+    expect(mobileHome).toContain('viewport.scrollLeft += cardCenter - viewportCenter');
   });
 
   it('preserves the existing search API, recent searches, and supported filters', () => {
