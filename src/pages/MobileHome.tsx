@@ -84,7 +84,13 @@ export function MobileHome({
     if (viewport && featuredItems.length > 2) {
       const cards = Array.from(viewport.querySelectorAll('.panda-mobile-featured__card')) as HTMLElement[];
       const middle = cards[Math.min(2, cards.length - 1)];
-      if (middle) viewport.scrollLeft = middle.offsetLeft + middle.offsetWidth / 2 - viewport.clientWidth / 2;
+      if (middle) {
+        const viewportRect = viewport.getBoundingClientRect();
+        const cardRect = middle.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const viewportCenter = viewportRect.left + viewport.clientWidth / 2;
+        viewport.scrollLeft += cardCenter - viewportCenter;
+      }
     }
     setActiveIndex(Math.min(2, Math.max(0, featuredItems.length - 1)));
   }, [featuredItems.length]);
