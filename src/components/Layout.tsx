@@ -6,7 +6,7 @@ import { KinomaLogo } from './ui/KinomaLogo';
 export const ITEMS = [
   { href: '/home', label: 'Home', Icon: House },
   { href: '/search', label: 'Search', Icon: Search },
-  { href: '/library', label: 'My List', Icon: Library },
+  { href: '/library', label: 'Library', Icon: Library },
   { href: '/settings', label: 'Settings', Icon: Settings },
 ];
 
