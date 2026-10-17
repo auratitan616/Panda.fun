@@ -308,6 +308,14 @@ export function Details() {
               </button>
             </div>
           </div>
+          <nav className="kinoma-tv-season-rail" aria-label="Season navigation">
+            {seasonItems.map(season => (
+              <button type="button" key={season.seasonNumber} className={selectedSeason === season.seasonNumber ? 'is-selected' : ''} aria-pressed={selectedSeason === season.seasonNumber} onClick={() => setSelectedSeason(season.seasonNumber)}>
+                <span>Season {season.seasonNumber}</span>
+                <small>{season.episodeCount} {season.episodeCount === 1 ? 'Ep' : 'Eps'}</small>
+              </button>
+            ))}
+          </nav>
           <div ref={episodeRailRef} className={'kinoma-episode-list kinoma-episode-list--' + episodeView}>
             {(modelSeasons.find(s => s.number === selectedSeason)?.episodes || []).map(ep => (
               <button
