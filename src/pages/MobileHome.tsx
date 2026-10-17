@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import { ArrowRight, Search, UserRound } from 'lucide-react';
-import { KinomaLogo } from '../components/ui/KinomaLogo';
+import { ArrowRight } from 'lucide-react';
 import { ModernContinueWatching } from '../components/ui/modern/ModernContinueWatching';
 import { MovieApiMedia } from '../lib/api';
 import { buildDetailsHref } from '../lib/mediaRoute';
@@ -10,6 +9,12 @@ import './mobile-home.css';
 
 type MobileHomeProps = {
   items: MovieApiMedia[];
+  trendingItems?: MovieApiMedia[];
+  popularMovies?: MovieApiMedia[];
+  popularTv?: MovieApiMedia[];
+  newOnNetflix?: MovieApiMedia[];
+  newOnDisneyPlus?: MovieApiMedia[];
+  airing?: MovieApiMedia[];
 };
 
 function imageFor(item: MovieApiMedia) {
@@ -17,14 +22,70 @@ function imageFor(item: MovieApiMedia) {
   return source ? optimizeImageUrl(source, 'w500') || source : '';
 }
 
-export function MobileHome({ items }: MobileHomeProps) {
+function uniqueItems(items: MovieApiMedia[]) {
+  return items.filter((item, index, all) => Boolean(item?.id) && all.findIndex(other => other?.id === item.id) === index);
+}
+
+function MobileRail({ title, items, topTen = false }: { title: string; items: MovieApiMedia[]; topTen?: boolean }) {
+  if (!items.length) return null;
+  const visible = items.slice(0, topTen ? 10 : 12);
+
+  return (
+    <section className={`panda-mobile-home__collection${topTen ? ' panda-mobile-home__collection--top10' : ''}`} aria-label={title}>
+      <div className="panda-mobile-home__section-head">
+        <h2>{title}</h2>
+        <Link href="/search" aria-label={`Explore ${title}`}><ArrowRight size={17} /></Link>
+      </div>
+      <div className={topTen ? 'panda-mobile-home__top10' : 'panda-mobile-home__trending'}>
+        {visible.map((item, index) => {
+          const image = imageFor(item);
+          const href = buildDetailsHref(item, item.type === 'movie' ? 'movie' : 'series');
+          return topTen ? (
+            <div className="panda-mobile-home__top10-item" key={item.id}>
+              <span className="panda-mobile-home__rank" aria-label={`Rank ${index + 1}`}>{index + 1}</span>
+              <Link href={href} className="panda-mobile-home__top10-card" aria-label={`Open ${item.title}, Top 10 rank ${index + 1}`}>
+                {image ? <img src={image} alt="" loading={index < 3 ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer" /> : <span className="panda-mobile-featured__no-art" />}
+              </Link>
+            </div>
+          ) : (
+            <Link key={item.id} href={href} className="panda-mobile-home__trending-card" aria-label={`Open ${item.title}`}>
+              {image ? <img src={image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" /> : <span className="panda-mobile-featured__no-art" />}
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function MobileHome({
+  items,
+  trendingItems,
+  popularMovies = [],
+  popularTv = [],
+  newOnNetflix = [],
+  newOnDisneyPlus = [],
+  airing = [],
+}: MobileHomeProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [activeIndex, setActiveIndex] = useState(2);
-  const featuredItems = items.filter((item, index, all) => item?.id && (item.poster || item.backdrop) && all.findIndex(other => other.id === item.id) === index).slice(0, 5);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const featuredItems = useMemo(() => uniqueItems(items).filter(item => item.poster || item.backdrop).slice(0, 5), [items]);
+  const catalogue = useMemo(() => uniqueItems([
+    ...(trendingItems || []),
+    ...popularMovies,
+    ...popularTv,
+    ...items,
+  ]), [trendingItems, popularMovies, popularTv, items]);
+  const topTen = catalogue.slice(0, 10);
+  const trending = uniqueItems(trendingItems?.length ? trendingItems : items);
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (viewport && featuredItems.length > 2) viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+    if (viewport && featuredItems.length > 2) {
+      const cards = Array.from(viewport.querySelectorAll('.panda-mobile-featured__card')) as HTMLElement[];
+      const middle = cards[Math.min(2, cards.length - 1)];
+      if (middle) viewport.scrollLeft = middle.offsetLeft + middle.offsetWidth / 2 - viewport.clientWidth / 2;
+    }
     setActiveIndex(Math.min(2, Math.max(0, featuredItems.length - 1)));
   }, [featuredItems.length]);
 
@@ -44,20 +105,10 @@ export function MobileHome({ items }: MobileHomeProps) {
   };
 
   return (
-    <main className="panda-mobile-home">
-      <header className="panda-mobile-home__header">
-        <Link href="/home" aria-label="Panda.fun home" className="panda-mobile-home__brand">
-          <KinomaLogo size="md" variant="full" />
-        </Link>
-        <Link href="/profile" className="panda-mobile-home__profile" aria-label="Profile">
-          <UserRound size={20} strokeWidth={1.7} />
-        </Link>
-      </header>
-
+    <div className="panda-mobile-home">
       <section className="panda-mobile-featured" aria-label="Featured titles">
         <div className="panda-mobile-featured__head">
           <span className="panda-mobile-eyebrow">YOUR NEXT WATCH</span>
-          <Link href="/search" aria-label="Search movies and shows" className="panda-mobile-featured__search"><Search size={18} /></Link>
         </div>
         {featuredItems.length > 0 ? (
           <div className="panda-mobile-featured__viewport" ref={viewportRef} onScroll={updateActiveCard}>
@@ -70,9 +121,9 @@ export function MobileHome({ items }: MobileHomeProps) {
                     href={buildDetailsHref(item, item.type === 'movie' ? 'movie' : 'series')}
                     className={'panda-mobile-featured__card' + (index === activeIndex ? ' is-initial-center' : '')}
                     aria-label={'Open ' + item.title}
-                    onClick={() => { /* Wouter handles navigation without reloading the app. */ }}
                   >
                     {image ? <img src={image} alt="" loading={index < 3 ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer" /> : <span className="panda-mobile-featured__no-art" />}
+                    <span className="panda-mobile-featured__caption">{item.title}</span>
                   </Link>
                 );
               })}
@@ -81,33 +132,19 @@ export function MobileHome({ items }: MobileHomeProps) {
         ) : (
           <div className="panda-mobile-featured__loading" aria-label="Featured titles loading"><span /><span /><span /></div>
         )}
-        <div className="panda-mobile-featured__hint" aria-hidden="true"><span /><span /><span /><span /><span /></div>
+        <div className="panda-mobile-featured__hint" aria-hidden="true">
+          {featuredItems.map((item, index) => <span key={item.id} className={index === activeIndex ? 'is-active' : ''} />)}
+        </div>
       </section>
 
-      <section className="panda-mobile-home__collection">
-        <div className="panda-mobile-home__section-head">
-          <h2>Continue Watching</h2>
-          <Link href="/library" aria-label="Open Library"><ArrowRight size={17} /></Link>
-        </div>
-        <ModernContinueWatching />
-      </section>
-
-      <section className="panda-mobile-home__collection">
-        <div className="panda-mobile-home__section-head">
-          <h2>Trending now</h2>
-          <Link href="/search" aria-label="Explore trending titles"><ArrowRight size={17} /></Link>
-        </div>
-        <div className="panda-mobile-home__trending">
-          {items.slice(0, 6).map(item => {
-            const image = imageFor(item);
-            return (
-              <Link key={item.id} href={buildDetailsHref(item, item.type === 'movie' ? 'movie' : 'series')} className="panda-mobile-home__trending-card" aria-label={'Open ' + item.title}>
-                {image ? <img src={image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" /> : <span className="panda-mobile-featured__no-art" />}
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-    </main>
+      <MobileRail title="Top 10" items={topTen} topTen />
+      <ModernContinueWatching />
+      <MobileRail title="Trending Now" items={trending} />
+      <MobileRail title="New on Netflix" items={uniqueItems(newOnNetflix)} />
+      <MobileRail title="New on Disney+" items={uniqueItems(newOnDisneyPlus)} />
+      <MobileRail title="Popular Movies" items={uniqueItems(popularMovies)} />
+      <MobileRail title="Popular TV Shows" items={uniqueItems(popularTv)} />
+      <MobileRail title="Airing Today" items={uniqueItems(airing)} />
+    </div>
   );
 }

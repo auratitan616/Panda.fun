@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { House, Search, Library, Settings, Info, UserRound, FileText, Shield } from 'lucide-react';
 import { KinomaLogo } from './ui/KinomaLogo';
+import './mobile/mobile-shell.css';
 
 export const ABOUT_ITEMS = [
   { href: '/about', label: 'About' },
@@ -23,6 +24,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [expanded, setExpanded] = useState(false);
   const collapseTimer = useRef<number | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
+  const isPlayerRoute = location.startsWith('/watch/');
 
   useEffect(() => { mainRef.current?.focus({ preventScroll: true }); }, [location]);
   useEffect(() => () => { if (collapseTimer.current !== null) window.clearTimeout(collapseTimer.current); }, []);
@@ -37,26 +39,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="panda-app-shell kinoma-app-shell" style={{ '--sidebar-width': expanded ? '260px' : '64px' } as React.CSSProperties}>
+    <div className={`panda-app-shell kinoma-app-shell${isPlayerRoute ? ' panda-app-shell--player' : ''}`} style={{ '--sidebar-width': expanded ? '260px' : '64px' } as React.CSSProperties}>
       <a className="panda-skip-link" href="#panda-main-content">Skip to main content</a>
-      <nav className="panda-mobile-bottom-nav" aria-label="Panda.fun mobile navigation">
-        {ITEMS.filter(({ href }) => href !== '/settings').map(({ href, label, Icon }) => {
-          const mobileLabel = href === '/library' ? 'Library' : label;
-          const active = location === href || (href === '/home' && location === '/browse') || (href === '/search' && (location === '/explore' || location === '/whats-new')) || (href === '/library' && location === '/history');
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`panda-mobile-bottom-nav__item ${active ? 'is-active' : ''}`}
-              aria-label={mobileLabel}
-              aria-current={active ? 'page' : undefined}
-            >
-              <span className="panda-mobile-bottom-nav__icon"><Icon size={21} strokeWidth={1.9} /></span>
-              <span className="panda-mobile-bottom-nav__label">{mobileLabel}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {!isPlayerRoute && (
+        <header className="panda-mobile-header">
+          <Link href="/home" className="panda-mobile-header__brand" aria-label="MYpanda.fun home">
+            <KinomaLogo size="md" variant="full" />
+          </Link>
+          <nav className="panda-mobile-header__actions" aria-label="Quick actions">
+            <Link href="/search" className="panda-mobile-header__action" aria-label="Search movies and shows"><Search size={20} strokeWidth={1.9} /></Link>
+            <Link href="/profile" className="panda-mobile-header__action" aria-label="Profile"><UserRound size={20} strokeWidth={1.8} /></Link>
+          </nav>
+        </header>
+      )}
+      {!isPlayerRoute && (
+        <nav className="panda-mobile-bottom-nav" aria-label="MYpanda.fun mobile navigation">
+          {ITEMS.filter(({ href }) => href !== '/settings').map(({ href, label, Icon }) => {
+            const mobileLabel = href === '/library' ? 'Library' : label;
+            const active = location === href || (href === '/home' && location === '/browse') || (href === '/search' && (location === '/explore' || location === '/whats-new')) || (href === '/library' && location === '/history');
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`panda-mobile-bottom-nav__item ${active ? 'is-active' : ''}`}
+                aria-label={mobileLabel}
+                aria-current={active ? 'page' : undefined}
+              >
+                <span className="panda-mobile-bottom-nav__icon"><Icon size={21} strokeWidth={1.9} /></span>
+                <span className="panda-mobile-bottom-nav__label">{mobileLabel}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      )}
       <aside className={`kinoma-sidebar kinoma-sidebar--icons ${expanded ? 'is-expanded' : 'is-collapsed'}`} aria-label="Panda.fun navigation" onPointerEnter={expand} onPointerLeave={collapse}>
         <div className="kinoma-sidebar__top">
           <Link href="/home" className="kinoma-sidebar__brand" aria-label="Panda.fun home">

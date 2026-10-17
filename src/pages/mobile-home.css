@@ -1,5 +1,5 @@
 /* Dedicated mobile presentation; existing Panda.fun design tokens and artwork stay in use. */
-.panda-mobile-home { display: none; min-height: 100dvh; padding: 14px 0 110px; color: var(--kinoma-text); overflow: hidden; }
+.panda-mobile-home { display: none; min-height: 100dvh; padding: 0 0 110px; color: var(--kinoma-text); overflow: hidden; }
 .panda-mobile-home__header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 0 18px 22px; }
 .panda-mobile-home__brand { display:inline-flex; align-items:center; min-width:0; text-decoration:none; }
 .panda-mobile-home__brand .panda-wordmark { font-size:22px; letter-spacing:-.06em; }
@@ -10,17 +10,17 @@
 .panda-mobile-featured__search { width:36px; height:36px; color:var(--kinoma-accent-soft); }
 .panda-mobile-featured__viewport { width:100%; overflow-x:auto; overflow-y:visible; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain; padding: 3px 0 9px; }
 .panda-mobile-featured__viewport::-webkit-scrollbar { display:none; }
-.panda-mobile-featured__track { display:flex; align-items:center; gap:11px; width:max-content; padding-inline:calc((100vw - 57vw)/2); }
-.panda-mobile-featured__card { position:relative; display:block; flex:0 0 57vw; width:57vw; aspect-ratio:2/3; overflow:hidden; scroll-snap-align:center; border-radius:13px; border:1px solid rgba(246,242,238,.13); background:linear-gradient(145deg,#191715,#080808); box-shadow:0 12px 28px rgba(0,0,0,.28); transform:scale(.91); opacity:.76; transition:transform .28s ease,opacity .28s ease,border-color .28s ease; }
+.panda-mobile-featured__track { display:flex; align-items:center; gap:11px; width:max-content; padding-inline:calc((100vw - 76vw)/2); }
+.panda-mobile-featured__card { position:relative; display:block; flex:0 0 76vw; width:76vw; aspect-ratio:16/9; overflow:hidden; scroll-snap-align:center; border-radius:13px; border:1px solid rgba(246,242,238,.13); background:#000; box-shadow:0 12px 28px rgba(0,0,0,.28); transform:scale(.91); opacity:.76; transition:transform .28s ease,opacity .28s ease,border-color .28s ease; }
 .panda-mobile-featured__card.is-initial-center { transform:scale(1); opacity:1; border-color:rgba(232,208,192,.36); box-shadow:0 16px 36px rgba(0,0,0,.36),0 0 0 1px rgba(232,208,192,.05); }
 .panda-mobile-featured__card img, .panda-mobile-home__trending-card img { display:block; width:100%; height:100%; object-fit:cover; }
 .panda-mobile-featured__card::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(0,0,0,.03),transparent 48%,rgba(0,0,0,.22)); }
-.panda-mobile-featured__no-art { display:block; width:100%; height:100%; background:radial-gradient(ellipse at 50% 25%,rgba(184,77,65,.19),transparent 55%),linear-gradient(145deg,#191715,#080808); }
+.panda-mobile-featured__no-art { display:block; width:100%; height:100%; background:#000; }
 .panda-mobile-featured__hint { display:flex; justify-content:center; align-items:center; gap:5px; padding-top:5px; }
 .panda-mobile-featured__hint span { display:block; width:4px; height:4px; border-radius:99px; background:rgba(246,242,238,.24); }
-.panda-mobile-featured__hint span:nth-child(3) { width:15px; background:var(--kinoma-accent-soft); }
+.panda-mobile-featured__hint span.is-active { width:15px; background:var(--kinoma-accent-soft); }
 .panda-mobile-featured__loading { display:flex; gap:10px; align-items:center; justify-content:center; height:52vh; }
-.panda-mobile-featured__loading span { display:block; width:52vw; aspect-ratio:2/3; border-radius:13px; background:linear-gradient(110deg,#111 20%,#1d1a18 40%,#111 60%); }
+.panda-mobile-featured__loading span { display:block; width:76vw; aspect-ratio:16/9; border-radius:13px; background:#000; }
 .panda-mobile-home__collection { margin:25px 0 30px; }
 .panda-mobile-home__section-head { display:flex; align-items:center; justify-content:space-between; padding:0 18px 13px; }
 .panda-mobile-home__section-head h2 { color:var(--kinoma-text); font-size:18px; letter-spacing:-.035em; }
@@ -35,3 +35,34 @@
   .kinoma-app-main { padding-bottom:0 !important; }
 }
 @media(prefers-reduced-motion:reduce) { .panda-mobile-featured__card { transition:none; } }
+
+
+.panda-mobile-featured__card { border-radius:12px; }
+.panda-mobile-featured__card.is-initial-center { border-color:rgba(132,33,58,.78); box-shadow:0 14px 34px rgba(0,0,0,.65),0 0 0 1px rgba(132,33,58,.18); }
+.panda-mobile-featured__caption { position:absolute; z-index:2; right:0; bottom:0; left:0; padding:28px 12px 11px; overflow:hidden; color:#fff; font-size:13px; font-weight:750; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; background:linear-gradient(180deg,transparent,rgba(0,0,0,.88)); }
+.panda-mobile-featured__hint span { transition:width .18s ease,background .18s ease; }
+.panda-mobile-home__collection { margin:23px 0 28px; }
+.panda-mobile-home__section-head h2 { font-size:18px; font-weight:750; letter-spacing:-.035em; }
+.panda-mobile-home__section-head a { width:30px; height:30px; border:1px solid rgba(255,255,255,.09); border-radius:50%; color:#d7a0ad; }
+.panda-mobile-home__top10 { display:flex; gap:9px; overflow-x:auto; padding:0 18px 9px; scrollbar-width:none; scroll-snap-type:x proximity; }
+.panda-mobile-home__top10::-webkit-scrollbar { display:none; }
+.panda-mobile-home__top10-item { position:relative; flex:0 0 38vw; width:38vw; scroll-snap-align:start; }
+.panda-mobile-home__rank { position:absolute; z-index:2; left:0; bottom:-4px; color:transparent; font-family:'Roboto Slab',serif; font-size:clamp(55px,17vw,84px); font-weight:900; line-height:.92; letter-spacing:-.12em; -webkit-text-stroke:1.4px rgba(242,231,234,.92); text-shadow:0 4px 14px rgba(0,0,0,.9); pointer-events:none; }
+.panda-mobile-home__top10-card { position:relative; display:block; width:calc(100% - 21px); margin-left:21px; aspect-ratio:2/3; overflow:hidden; border:1px solid rgba(255,255,255,.1); border-radius:9px; background:#080808; }
+.panda-mobile-home__top10-card img { display:block; width:100%; height:100%; object-fit:cover; }
+.panda-mobile-home__top10-card .panda-mobile-featured__no-art { width:100%; height:100%; }
+.panda-mobile-home__continue { margin-top:21px; }
+.panda-mobile-home__continue .modern-carousel { padding-inline:18px; }
+.panda-mobile-home__trending { grid-auto-columns:34vw; }
+@media(max-width:767px) {
+  .panda-mobile-home { padding-top:0 !important; }
+  .panda-mobile-featured { padding-top:0; }
+  .panda-mobile-featured__head { padding-top:13px; padding-bottom:10px; }
+  .panda-mobile-home__collection { margin-top:22px; }
+}
+@media(min-width:520px) and (max-width:767px) {
+  .panda-mobile-featured__card { flex-basis:68vw; width:68vw; }
+  .panda-mobile-featured__track { padding-inline:calc((100vw - 68vw)/2); }
+  .panda-mobile-home__top10-item { flex-basis:27vw; width:27vw; }
+  .panda-mobile-home__trending { grid-auto-columns:25vw; }
+}
