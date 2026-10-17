@@ -27,12 +27,13 @@ describe('MovieApi cross-provider series behavior', () => {
       if (url.includes('/api/v1/recommendations/95350?type=tv')) {
         return new Response(JSON.stringify({
           results: [{
-            id: 123,
-            name: 'Related Series',
-            poster_path: '/related.jpg',
-            backdrop_path: '/related-bg.jpg',
-            first_air_date: '2026-01-01',
-            vote_average: 8.1,
+            id: 'tmdb_tv_123',
+            type: 'tv',
+            title: 'Related Series',
+            poster: 'https://image.tmdb.org/t/p/w500/related.jpg',
+            backdrop: 'https://image.tmdb.org/t/p/w1280/related-bg.jpg',
+            releaseDate: '2026-01-01',
+            rating: 8.1,
             overview: 'A related title.',
           }],
           total_results: 1,
