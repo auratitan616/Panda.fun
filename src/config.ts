@@ -43,7 +43,7 @@ export type Config = {
 };
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): Config {
-  const parsed = envSchema.parse(env);
+  const parsed = parseConfigEnv(env);
   const apiKeys = new Set(parsed.MOVIEAPI_API_KEYS.split(",").map((v) => v.trim()).filter(Boolean));
 
   if (parsed.MOVIEAPI_AUTH_REQUIRED && apiKeys.size === 0) {
