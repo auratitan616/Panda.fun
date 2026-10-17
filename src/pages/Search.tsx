@@ -1,12 +1,15 @@
 
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Footer } from '../components/ui/Footer';
-import { ArrowRight, Clock3, Filter, Mic, MicOff, Search as SearchIcon, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Check, Clock3, Filter, Mic, MicOff, Plus, Play, Search as SearchIcon, Sparkles, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { updateSEO } from '../lib/seo';
 import { trackGAEvent } from '../lib/analytics';
 import { buildDetailsHref } from '../lib/mediaRoute';
 import { preferencesUtil } from '../lib/preferences';
+import { libraryManager } from '../lib/library';
+import { optimizeImageUrl } from '../lib/mediaImages';
+import '../styles/panda-home.css';
 import { api, MovieApiError } from '../lib/api';
 import type { AnimeItem } from '../types';
 import { ThinkingOrb } from 'thinking-orbs';
@@ -39,13 +42,60 @@ const mapItem = (item: AnimeItem): SearchItem => {
 };
 
 function ContentCard({ item, priority = false }: { key?: React.Key; item: SearchItem; priority?: boolean }) {
-  return <Link href={item.href} className="kinoma-search-card kinoma-focus" onClick={() => trackGAEvent('search_result_select', { content_type: item.type, title: item.title })}>
-    <div className="kinoma-search-card__art" aria-hidden="true">
-      {item.image ? <img src={item.image} alt="" srcSet={item.image.includes("/w500/") ? `${item.image.replace("/w500/", "/w342/")} 342w, ${item.image} 500w` : undefined} sizes="(max-width: 700px) 42vw, (max-width: 1100px) 24vw, 18vw" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} decoding="async" referrerPolicy="no-referrer" /> : <><span className="kinoma-search-card__orb kinoma-search-card__orb--one" /><span className="kinoma-search-card__orb kinoma-search-card__orb--two" /></>}
-      <span className="kinoma-search-card__shine" /><span className="kinoma-search-card__type">{item.type.toUpperCase()}</span>
-    </div>
-    <div className="kinoma-search-card__copy"><h3>{item.title}</h3><p>{item.meta}</p></div>
-  </Link>;
+  const [inList, setInList] = useState(() => libraryManager.isInWatchlist(item.id));
+  const image = item.image ? optimizeImageUrl(item.image, 'w342') || item.image : '';
+  const toggleList = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setInList(libraryManager.toggleWatchlist({ id: item.id, title: item.title, image: item.image || '' }));
+  };
+
+  return (
+    <article className="panda-content-card">
+      <Link
+        href={item.href}
+        className="panda-content-card__link"
+        aria-label={`Open ${item.title}`}
+        onClick={() => trackGAEvent('search_result_select', { content_type: item.type, title: item.title })}
+      >
+        <div className="panda-content-card__media">
+          {image ? (
+            <div className="panda-content-card__image-wrap">
+              <div className="panda-content-card__image-skeleton" aria-hidden="true" />
+              <img
+                src={image}
+                srcSet={image.includes('/w500/') ? `${image.replace('/w500/', '/w342/')} 342w, ${image} 500w` : undefined}
+                sizes="(max-width: 620px) 44vw, (max-width: 1050px) 24vw, 18vw"
+                alt=""
+                loading={priority ? 'eager' : 'lazy'}
+                fetchPriority={priority ? 'high' : 'auto'}
+                decoding="async"
+                referrerPolicy="no-referrer"
+                onLoad={event => event.currentTarget.previousElementSibling?.classList.add('is-hidden')}
+              />
+            </div>
+          ) : null}
+          <div className="panda-content-card__top">
+            <span className="panda-content-card__badge">{item.type === 'movie' ? 'Movie' : 'Series'}</span>
+          </div>
+          <span className="panda-content-card__play" aria-hidden="true"><Play size={17} fill="currentColor" /></span>
+        </div>
+        <div className="panda-content-card__copy">
+          <strong title={item.title}>{item.title}</strong>
+          <span>{item.meta}</span>
+        </div>
+      </Link>
+      <button
+        type="button"
+        className={`panda-content-card__quick${inList ? ' is-added' : ''}`}
+        onClick={toggleList}
+        aria-label={inList ? `Remove ${item.title} from My List` : `Add ${item.title} to My List`}
+        title={inList ? 'Remove from My List' : 'Add to My List'}
+      >
+        {inList ? <Check size={15} /> : <Plus size={15} />}
+      </button>
+    </article>
+  );
 }
 
 export function Search() {

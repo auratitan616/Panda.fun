@@ -9757,3 +9757,93 @@ html.tv-mode .panda-content-card:focus-within { scroll-margin-inline: 32px; }
   .kinoma-search-page .kinoma-search-loading__copy > span { font-size: 13px; }
   .kinoma-search-page .kinoma-search-loading__copy p { font-size: 11px; }
 }
+
+
+/* Search refinement — reuse the exact homepage poster-card language. */
+.kinoma-search-page .kinoma-search-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  gap: 22px 16px;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card {
+  width: 100%;
+  min-width: 0;
+  contain: none;
+  content-visibility: visible;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__media {
+  position: relative;
+  aspect-ratio: 2 / 2.92;
+  overflow: hidden;
+  border: 1px solid rgba(246,242,238,.085);
+  border-radius: 14px;
+  background: #121110;
+  box-shadow: 0 14px 34px rgba(0,0,0,.26);
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__image-wrap {
+  position: absolute;
+  inset: 0;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__copy {
+  padding: 11px 2px 0;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__copy strong {
+  font-size: 12px;
+  line-height: 1.35;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__copy span {
+  margin-top: 5px;
+  font-size: 9px;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card__quick {
+  width: 32px;
+  height: 32px;
+}
+.kinoma-search-page .kinoma-search-grid .panda-content-card:hover .panda-content-card__media {
+  border-color: rgba(232,208,192,.18);
+  box-shadow: 0 22px 42px rgba(0,0,0,.34);
+}
+@media (max-width: 1050px) {
+  .kinoma-search-page .kinoma-search-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 14px; }
+}
+@media (max-width: 760px) {
+  .kinoma-search-page .kinoma-search-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; }
+}
+@media (max-width: 520px) {
+  .kinoma-search-page .kinoma-search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+  .kinoma-search-page .kinoma-search-grid .panda-content-card__media { border-radius: 12px; }
+  .kinoma-search-page .kinoma-search-grid .panda-content-card__copy { padding-top: 8px; }
+  .kinoma-search-page .kinoma-search-grid .panda-content-card__copy strong { font-size: 11px; }
+  .kinoma-search-page .kinoma-search-grid .panda-content-card__copy span { font-size: 8px; }
+}
+
+/* The search action gets a quieter, sharper metal finish without losing its orbiting beam. */
+.kinoma-search-page .kinoma-search-control__submit {
+  min-width: 102px;
+  min-height: 42px;
+  border-color: rgba(255,255,255,.48);
+  border-radius: 10px;
+  background: linear-gradient(145deg, #f2eee9 0%, #d3ccc5 38%, #a9a39e 53%, #e7e2dc 76%, #f7f4f0 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.96), inset 0 -1px 0 rgba(50,43,39,.22), 0 4px 12px rgba(0,0,0,.28);
+  color: #171311;
+  letter-spacing: .015em;
+}
+.kinoma-search-page .kinoma-search-control__submit::before {
+  background: conic-gradient(from 0deg, transparent 0deg 238deg, rgba(255,255,255,.2) 260deg, #fff 278deg, #e8d0c0 294deg, #b6c4dc 307deg, transparent 326deg 360deg);
+  animation: panda-search-beam-spin 1.96s linear infinite;
+}
+.kinoma-search-page .kinoma-search-control__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.055) contrast(1.02);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.98), inset 0 -1px 0 rgba(50,43,39,.18), 0 7px 18px rgba(0,0,0,.32);
+}
+.kinoma-search-page .kinoma-search-control__submit:active { transform: scale(.985); }
+@media (max-width: 640px) {
+  .kinoma-search-page .kinoma-search-control__submit { min-width: 78px; }
+}
