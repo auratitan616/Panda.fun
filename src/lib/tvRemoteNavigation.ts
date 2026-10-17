@@ -79,7 +79,18 @@ export function handleTVRemoteKey(event: KeyboardEvent): boolean {
   const current = target.matches(FOCUSABLE_SELECTOR) && isVisibleFocusable(target)
     ? target
     : target.closest<HTMLElement>(FOCUSABLE_SELECTOR);
-  if (!current || !isVisibleFocusable(current)) return false;
+
+  // Layout currently focuses the main region on route changes. Recover from
+  // that non-interactive focus target without jumping to an arbitrary control.
+  if (!current || !isVisibleFocusable(current)) {
+    const first = Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      .find(isVisibleFocusable);
+    if (!first) return false;
+    event.preventDefault();
+    first.focus({ preventScroll: true });
+    first.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
+    return true;
+  }
 
   const direction: Direction = event.key === 'ArrowLeft' ? 'left'
     : event.key === 'ArrowRight' ? 'right'
