@@ -32,8 +32,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="panda-app-shell kinoma-app-shell" style={{ '--sidebar-width': expanded ? '260px' : '64px' } as React.CSSProperties}>
       <a className="panda-skip-link" href="#panda-main-content">Skip to main content</a>
       <nav className="panda-mobile-bottom-nav" aria-label="Panda.fun mobile navigation">
-        {ITEMS.map(({ href, label, Icon }) => {
-          const active = location === href || (href === '/search' && (location === '/explore' || location === '/whats-new'));
+        {ITEMS.filter(({ href }) => href !== '/settings').map(({ href, label, Icon }) => {
+          const mobileLabel = href === '/library' ? 'Library' : label;
+          const active = location === href || (href === '/home' && location === '/browse') || (href === '/search' && (location === '/explore' || location === '/whats-new')) || (href === '/library' && location === '/history');
           return (
             <Link
               key={href}
