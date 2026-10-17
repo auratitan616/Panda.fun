@@ -37,7 +37,7 @@ function ContentCard({ item, priority = false }: { key?: React.Key; item: Search
 }
 
 export function Search() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const initialQuery = useMemo(() => new URLSearchParams(window.location.search).get('keyword')?.trim() || '', []);
   const [query, setQuery] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
@@ -46,7 +46,14 @@ export function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryNonce, setRetryNonce] = useState(0);
-  const [filter, setFilter] = useState<'all' | 'movie' | 'series'>('all');
+  const [filter, setFilter] = useState<'all' | 'movie' | 'series'>(() => {
+    const requestedType = new URLSearchParams(window.location.search).get('type');
+    return requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all';
+  });
+  useEffect(() => {
+    const requestedType = new URLSearchParams(location.split('?')[1] || '').get('type');
+    setFilter(requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all');
+  }, [location]);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
   const isSearching = submittedQuery.length > 0;
@@ -128,7 +135,7 @@ export function Search() {
       <header className="kinoma-search-head">
         <div className="kinoma-search-head__copy">
           <span className="kinoma-eyebrow">{isSearching ? 'Search results' : 'Discover'}</span>
-          <h1>{isSearching ? 'Results for “' + submittedQuery + '”' : 'What are we watching?'}</h1>
+          <h1>{isSearching ? 'Results for “' + submittedQuery + '”' : filter === 'movie' ? 'Movies for tonight' : filter === 'series' ? 'TV shows to get into' : 'What are we watching?'}</h1>
           <p>{isSearching ? 'Movies, series and anime matching your search.' : 'Tell Panda what you feel like watching. We’ll bring the leaves... and the good stuff.'}</p>
         </div>
         {!isSearching && (
@@ -163,7 +170,7 @@ export function Search() {
       </header>
       {!isSearching && recentSearches.length > 0 && <section className="kinoma-search-recent" aria-label="Recent searches"><div className="kinoma-search-recent__label"><Clock3 size={14} /> Recent</div><div className="kinoma-search-recent__items">{recentSearches.slice(0, 5).map(item => <button key={item} type="button" onClick={() => chooseRecent(item)}>{item}</button>)}<button type="button" className="kinoma-search-recent__clear" onClick={clearRecent}>Clear</button></div></section>}
       <section ref={resultsRef} className="kinoma-search-results" id="search-results">
-        <div className="kinoma-search-results__heading"><div><span className="kinoma-eyebrow">{isSearching ? 'Your search' : 'Live discovery'}</span><h2>{isSearching ? 'Matches' : 'Trending now'}</h2></div>{!isSearching && <Sparkles size={18} />}</div>
+        <div className="kinoma-search-results__heading"><div><span className="kinoma-eyebrow">{isSearching ? 'Your search' : 'Live discovery'}</span><h2>{isSearching ? 'Matches' : filter === 'movie' ? 'Movies' : filter === 'series' ? 'TV shows' : 'Trending now'}</h2></div>{!isSearching && <Sparkles size={18} />}</div>
         {!loading && !error && results.length > 0 && <div className="kinoma-search-toolbar"><div className="kinoma-search-filters" role="tablist" aria-label="Filter search results"><button type="button" role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}><Filter size={13} /> All <span>{results.length}</span></button><button type="button" role="tab" aria-selected={filter === 'movie'} className={filter === 'movie' ? 'is-active' : ''} onClick={() => setFilter('movie')}>Movies <span>{results.filter(item => item.type === 'movie').length}</span></button><button type="button" role="tab" aria-selected={filter === 'series'} className={filter === 'series' ? 'is-active' : ''} onClick={() => setFilter('series')}>Series <span>{results.filter(item => item.type === 'series').length}</span></button></div><span className="kinoma-search-toolbar__count">{visibleResults.length} {visibleResults.length === 1 ? 'title' : 'titles'}</span></div>}
         {loading ? <div className="kinoma-search-empty"><SearchIcon size={28} /><h3>Searching…</h3><p>Finding movies and series from MovieApi.</p></div>
         : error ? <div className="kinoma-search-empty"><SearchIcon size={28} /><h3>Search unavailable</h3><p>{error}</p><button type="button" onClick={() => setRetryNonce(value => value + 1)}>Try again</button></div>
