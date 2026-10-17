@@ -3,10 +3,10 @@
   :root {
     --kinoma-bg: #000;
     --kinoma-bg-elevated: #000;
-    --kinoma-surface: #080808;
-    --kinoma-surface-hover: #111;
-    --kinoma-card: #080808;
-    --kinoma-card-hover: #111;
+    --kinoma-surface: #000;
+    --kinoma-surface-hover: #080808;
+    --kinoma-card: #000;
+    --kinoma-card-hover: #080808;
     --kinoma-accent: #65172a;
     --kinoma-accent-hover: #84213a;
     --kinoma-accent-soft: #d7a0ad;
