@@ -23,8 +23,8 @@ export const ITEMS = [
 const TV_ITEMS = [
   { href: '/search', label: 'Search', Icon: Search },
   { href: '/home', label: 'Home', Icon: House },
-  { href: '/search?keyword=tv', label: 'TV', Icon: Tv },
-  { href: '/search?keyword=movies', label: 'Movies', Icon: Clapperboard },
+  { href: '/search?type=series', label: 'TV', Icon: Tv },
+  { href: '/search?type=movie', label: 'Movies', Icon: Clapperboard },
   { href: '/search?keyword=sports', label: 'Sports', Icon: Trophy },
   { href: '/search', label: 'Categories', Icon: Grid2X2 },
   { href: '/profile', label: 'My Space', Icon: UserRound },
@@ -81,8 +81,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 (href === '/library' && (pathname === '/library' || pathname === '/history')) ||
                 (href === '/settings' && pathname === '/settings') ||
                 (href === '/search' && pathname === '/search' && !query.get('keyword')) ||
-                (href === '/search?keyword=tv' && pathname === '/search' && query.get('keyword') === 'tv') ||
-                (href === '/search?keyword=movies' && pathname === '/search' && query.get('keyword') === 'movies') ||
+                (href === '/search?type=series' && pathname === '/search' && query.get('type') === 'series') ||
+                (href === '/search?type=movie' && pathname === '/search' && query.get('type') === 'movie') ||
                 (href === '/search?keyword=sports' && pathname === '/search' && query.get('keyword') === 'sports');
               return <Link key={label} href={href} className={`kinoma-sidebar__item ${active ? 'is-active' : ''}`} aria-label={label} aria-current={active ? 'page' : undefined} data-tooltip={label}><Icon size={tvMode ? 23 : 20} strokeWidth={1.8} /><span>{label}</span></Link>;
             })}
