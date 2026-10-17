@@ -31,7 +31,8 @@ describe('MYpanda.fun mobile shell contract', () => {
     }
     expect(mobileHome).toContain('<ModernContinueWatching />');
     expect(mobileHome).toContain('buildDetailsHref');
-    expect(homeStyles).toContain('aspect-ratio:16/9');
+    expect(homeStyles).toContain('aspect-ratio: 16 / 9');
+    expect(homeStyles).toContain('overflow-x: clip');
     expect(mobileHome).toContain('const viewportRect = viewport.getBoundingClientRect()');
     expect(mobileHome).toContain('viewport.scrollLeft += cardCenter - viewportCenter');
   });
