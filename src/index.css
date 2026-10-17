@@ -9498,3 +9498,26 @@ html.tv-mode .kinoma-library-page { color: #fff; }
     transition-duration: .01ms !important; animation-duration: .01ms !important;
   }
 }
+
+/* Keep the TV drawer readable when expanded by D-pad focus, not only pointer hover. */
+html.tv-mode .kinoma-sidebar:focus-within .kinoma-sidebar__item {
+  justify-content: flex-start;
+  padding-inline: 16px;
+}
+html.tv-mode .kinoma-sidebar:focus-within .kinoma-sidebar__item > span,
+html.tv-mode .kinoma-sidebar:focus-within .kinoma-sidebar__about-submenu {
+  opacity: 1;
+  pointer-events: auto;
+}
+html.tv-mode .kinoma-sidebar:focus-within .kinoma-sidebar__about-submenu { display: block; }
+html.tv-mode .kinoma-sidebar:focus-within .kinoma-sidebar__brand { justify-content: flex-start; }
+html.tv-mode .kinoma-home__ambient-orb,
+html.tv-mode .kinoma-home__ambient-orb--one,
+html.tv-mode .kinoma-home__ambient-orb--two { display: none !important; }
+html.tv-mode .kinoma-home-hero__trailer-bg::after {
+  background: linear-gradient(90deg, #000 0%, rgba(0,0,0,.72) 38%, rgba(0,0,0,.08) 78%),
+    linear-gradient(0deg, #000 0%, transparent 52%) !important;
+}
+html.tv-mode .panda-content-card:focus-within,
+html.tv-mode .panda-content-card:focus-within * { transition-duration: 160ms; }
+html.tv-mode .panda-content-card:focus-within { scroll-margin-inline: 32px; }
