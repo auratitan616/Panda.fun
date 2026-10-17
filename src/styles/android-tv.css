@@ -88,14 +88,14 @@ html.tv-mode .panda-tv-app-shell :is(button,a,[role="button"],input,select,texta
 }
 html.tv-mode .panda-tv-app-shell :is(button,a,[role="button"]) { scroll-margin: 36px; }
 html.tv-mode .panda-tv-app-shell :is(.panda-home-v2__section-title h3,.kinoma-search-head h1,.kinoma-details-title) { color:#fff; }
-html.tv-mode .panda-tv-app-shell .panda-home-v2__inner { width:min(calc(100% - 64px), 1720px); }
+html.tv-mode .panda-tv-app-shell .kinoma-home { min-height:100vh; background:#000; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home__inner { width:min(calc(100% - 72px), 1760px); margin-inline:auto; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero { min-height:min(76vh,820px); margin-bottom:8px; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__copy { max-width:760px; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__copy h1 { font-size:clamp(44px,4.1vw,64px); line-height:1.05; font-weight:800; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__copy p { max-width:720px; font-size:17px; line-height:1.65; color:#d0d0d5; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__actions { gap:18px; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__actions .kinoma-3d-button { min-height:52px; padding-inline:30px; border-radius:999px; }\nhtml.tv-mode .panda-tv-app-shell .kinoma-home-hero__actions .kinoma-3d-button:first-child { background:linear-gradient(90deg,#0052d4 0%,#4364f7 50%,#e21170 100%); color:#fff; }\nhtml.tv-mode .panda-tv-app-shell .panda-home-v2__inner { width:100%; }\nhtml.tv-mode .panda-tv-app-shell .panda-home-top10__rail { overflow-x:auto; gap:18px; padding:10px 8px 20px; }\nhtml.tv-mode .panda-tv-app-shell .panda-home-top10__rank { flex:0 0 clamp(180px,13.2vw,232px); }\nhtml.tv-mode .panda-tv-app-shell .panda-home-top10__number { -webkit-text-stroke:2px rgba(255,255,255,.92); }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__welcome { margin-top:34px; }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__section { margin-block:34px; }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__section-title h3 { font-size:24px; font-weight:700; }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__rail {
   display:grid;
   grid-auto-flow:column;
-  grid-auto-columns:minmax(0,1fr);
+  grid-auto-columns:clamp(180px, 13.2vw, 232px);
   grid-template-columns:none;
   gap:18px;
   overflow-x:auto;
