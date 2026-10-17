@@ -115,7 +115,10 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode; rese
     this.appChildren = props.children;
     this.state = { hasError: false };
   }
-  componentDidUpdate(previousProps: { resetKey?: string }) {\n    if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) this.setState({ hasError: false });\n  }\n  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidUpdate(previousProps: { resetKey?: string }) {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) this.setState({ hasError: false });
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
   componentDidCatch(error: unknown) { console.error('[Panda.fun] App render error:', error); }
   render() {
     if (!this.state.hasError) return this.appChildren;
