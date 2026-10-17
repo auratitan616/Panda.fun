@@ -145,6 +145,6 @@ export function MobileHome({
       <MobileRail title="Popular Movies" items={uniqueItems(popularMovies)} />
       <MobileRail title="Popular TV Shows" items={uniqueItems(popularTv)} />
       <MobileRail title="Airing Today" items={uniqueItems(airing)} />
-    </main>
+    </div>
   );
 }
