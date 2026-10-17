@@ -3,6 +3,14 @@ import { Link, useLocation } from 'wouter';
 import { House, Search, Library, Settings, Info, UserRound, FileText, Shield } from 'lucide-react';
 import { KinomaLogo } from './ui/KinomaLogo';
 
+export const ABOUT_ITEMS = [
+  { href: '/about', label: 'About' },
+  { href: '/docs', label: 'Docs' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/contact', label: 'Contact' },
+];
+
 export const ITEMS = [
   { href: '/home', label: 'Home', Icon: House },
   { href: '/search', label: 'Search', Icon: Search },
@@ -32,18 +40,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="panda-app-shell kinoma-app-shell" style={{ '--sidebar-width': expanded ? '260px' : '64px' } as React.CSSProperties}>
       <a className="panda-skip-link" href="#panda-main-content">Skip to main content</a>
       <nav className="panda-mobile-bottom-nav" aria-label="Panda.fun mobile navigation">
-        {ITEMS.map(({ href, label, Icon }) => {
-          const active = location === href || (href === '/search' && (location === '/explore' || location === '/whats-new'));
+        {ITEMS.filter(({ href }) => href !== '/settings').map(({ href, label, Icon }) => {
+          const mobileLabel = href === '/library' ? 'Library' : label;
+          const active = location === href || (href === '/home' && location === '/browse') || (href === '/search' && (location === '/explore' || location === '/whats-new')) || (href === '/library' && location === '/history');
           return (
             <Link
               key={href}
               href={href}
               className={`panda-mobile-bottom-nav__item ${active ? 'is-active' : ''}`}
-              aria-label={label}
+              aria-label={mobileLabel}
               aria-current={active ? 'page' : undefined}
             >
               <span className="panda-mobile-bottom-nav__icon"><Icon size={21} strokeWidth={1.9} /></span>
-              <span className="panda-mobile-bottom-nav__label">{label}</span>
+              <span className="panda-mobile-bottom-nav__label">{mobileLabel}</span>
             </Link>
           );
         })}

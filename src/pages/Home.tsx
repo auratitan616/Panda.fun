@@ -11,6 +11,7 @@ import { buildDetailsHref, buildWatchHref } from '../lib/mediaRoute';
 import { optimizeImageUrl } from '../lib/mediaImages';
 import { ModernContinueWatching } from '../components/ui/modern/ModernContinueWatching';
 import '../styles/panda-home.css';
+import { MobileHome } from './MobileHome';
 
 type RailKind = 'trending' | 'streamingNetflix' | 'streamingDisney' | 'popular' | 'tv' | 'movie' | 'airing';
 
@@ -188,6 +189,7 @@ function PandaRail({
 }
 
 export function Home() {
+  const [isMobileLayout, setIsMobileLayout] = useState(() => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches);
   const [home, setHome] = useState<any>(null);
   const [newOnNetflix, setNewOnNetflix] = useState<MovieApiMedia[]>([]);
   const [newOnDisneyPlus, setNewOnDisneyPlus] = useState<MovieApiMedia[]>([]);
@@ -199,6 +201,14 @@ export function Home() {
   const [trailerReady, setTrailerReady] = useState(false);
   const trailerFrameRef = useRef<HTMLIFrameElement | null>(null);
   
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateLayout = () => setIsMobileLayout(media.matches);
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
+
   const [hoverTrailer, setHoverTrailer] = useState<MovieApiMedia | null>(null);
   const [hoverTrailerUrl, setHoverTrailerUrl] = useState('');
   const hoverTrailerTimer = useRef<number | null>(null);
@@ -316,7 +326,7 @@ export function Home() {
     hoverTrailerController.current = null;
   }, []);
 
-  return (
+  return isMobileLayout ? <MobileHome items={[...(featured ? [featured] : []), ...trending, ...popularMovies, ...popularTv]} /> : (
     <main className="kinoma-home">
       <div className="kinoma-home__ambient" aria-hidden="true">
         <span className="kinoma-home__ambient-orb kinoma-home__ambient-orb--one" />

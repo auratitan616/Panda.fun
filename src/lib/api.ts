@@ -82,7 +82,7 @@ export class MovieApiError extends Error {
 const DEFAULT_BASE_URL = 'https://movieapi-3d0v.onrender.com';
 const DEFAULT_FALLBACK_URL = '';
 const LEGACY_VERCEL_API_HOST = 'apikinoma.vercel.app';
-const viteEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env || {};
+const viteEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 
 export function resolveMovieApiBaseUrl(configuredBase: unknown): string {
   const normalized = String(configuredBase || '').trim().replace(/\/+$/, '');
