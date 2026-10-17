@@ -390,6 +390,7 @@ export function createPandaSceneRuntime(options: PandaSceneRuntimeOptions): Pand
       }
 
       // Organic blink timing, with slight pupil movement so the face never feels frozen.\n      const blinkPhase = elapsed % 4.7;
+      const blinkPhase = elapsed % 4.7;
       const blinkOne = blinkPhase > 3.95 && blinkPhase < 4.08;
       const blinkTwo = blinkPhase > 1.05 && blinkPhase < 1.16;
       const blinking = state === 'sleep' || blinkOne || blinkTwo;
