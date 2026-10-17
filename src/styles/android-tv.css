@@ -160,3 +160,42 @@ html.tv-mode .panda-tv-app-shell .kinoma-sidebar__about-group { display:none; }
 @media (prefers-reduced-motion:reduce) {
   html.tv-mode .panda-tv-app-shell * { transition-duration:.01ms !important; }
 }
+
+
+html.tv-mode .panda-tv-app-shell .kinoma-tv-details-tabs {
+  position:sticky;
+  top:0;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px clamp(28px,4vw,76px);
+  background:rgba(0,0,0,.92);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(18px);
+}
+html.tv-mode .panda-tv-app-shell .kinoma-tv-details-tabs a {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:0 22px;
+  border:1px solid transparent;
+  border-radius:14px;
+  color:#b9b9c2;
+  text-decoration:none;
+  font-size:17px;
+  font-weight:650;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-tv-details-tabs a:focus,
+html.tv-mode .panda-tv-app-shell .kinoma-tv-details-tabs a:focus-visible {
+  color:#fff;
+  background:rgba(255,255,255,.15);
+  border-color:rgba(255,255,255,.22);
+  outline:3px solid #fff;
+  outline-offset:2px;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-tv-details-tabs a:hover { color:#fff; background:rgba(255,255,255,.09); }
+html.tv-mode .panda-tv-app-shell #episodes,
+html.tv-mode .panda-tv-app-shell #more-like-this,
+html.tv-mode .panda-tv-app-shell #trailers-more { scroll-margin-top:84px; }
