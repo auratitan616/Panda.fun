@@ -47,7 +47,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <KinomaLogo size="md" variant="full" />
           </Link>
           <nav className="panda-mobile-header__actions" aria-label="Quick actions">
-            <Link href="/search" className="panda-mobile-header__action" aria-label="Search movies and shows"><Search size={20} strokeWidth={1.9} /></Link>
             <Link href="/profile" className="panda-mobile-header__action" aria-label="Profile"><UserRound size={20} strokeWidth={1.8} /></Link>
           </nav>
         </header>
