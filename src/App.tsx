@@ -106,7 +106,9 @@ function AnimatedRoutes() {
   );
 }
 
-class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+class AppErrorBoundary extends React.Component<{ children: React.ReactNode; key?: React.Key }, { hasError: boolean }> {
+  declare readonly props: { children: React.ReactNode; key?: React.Key };
+  declare state: { hasError: boolean };
   private readonly appChildren: React.ReactNode;
   constructor(props: { children: React.ReactNode }) {
     super(props);
