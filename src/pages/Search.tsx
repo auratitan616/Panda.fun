@@ -1,7 +1,7 @@
 
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Footer } from '../components/ui/Footer';
-import { Clock3, Filter, Mic, MicOff, Search as SearchIcon, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Clock3, Filter, Mic, MicOff, Search as SearchIcon, Sparkles, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { updateSEO } from '../lib/seo';
 import { trackGAEvent } from '../lib/analytics';
@@ -202,38 +202,15 @@ export function Search() {
         <div className="kinoma-search-head__copy">
           <span className="kinoma-eyebrow">{isSearching ? 'Search results' : 'Discover'}</span>
           <h1>{isSearching ? 'Results for “' + submittedQuery + '”' : filter === 'movie' ? 'Movies for tonight' : filter === 'series' ? 'TV shows to get into' : 'What are we watching?'}</h1>
-          <p>{isSearching ? 'Movies, series and anime matching your search.' : 'Tell Panda what you feel like watching. We’ll bring the leaves... and the good stuff.'}</p>
+          <p>{isSearching ? 'Movies, series and anime matching your search.' : 'Search by title, genre, or cast. Find your next watch.'}</p>
         </div>
-        {!isSearching && (
-          <div className="panda-search-companion" aria-label="A panda happily eating bamboo leaves">
-            <div className="panda-search-bamboo" aria-hidden="true">
-              <span className="panda-search-stem" />
-              <span className="panda-search-leaf panda-search-leaf--one">🍃</span>
-              <span className="panda-search-leaf panda-search-leaf--two">🍃</span>
-              <span className="panda-search-leaf panda-search-leaf--three">🍃</span>
-            </div>
-            <div className="panda-search-panda" aria-hidden="true">
-              <span className="panda-search-ear panda-search-ear--left" />
-              <span className="panda-search-ear panda-search-ear--right" />
-              <span className="panda-search-head">
-                <span className="panda-search-eye panda-search-eye--left" />
-                <span className="panda-search-eye panda-search-eye--right" />
-                <span className="panda-search-muzzle"><span className="panda-search-nose" /></span>
-              </span>
-              <span className="panda-search-body" />
-              <span className="panda-search-paw panda-search-paw--left" />
-              <span className="panda-search-paw panda-search-paw--right" />
-            </div>
-            <span className="panda-search-caption">Panda is already looking.</span>
-          </div>
-        )}
         <form className="kinoma-search-control is-open" onSubmit={submitSearch}>
           <SearchIcon size={18} /><input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={handleInputKeyDown} placeholder="Search movies, series or anime" aria-label="Search movies, series or anime" autoComplete="off" />
           {query && <button type="button" className="kinoma-search-control__clear" onClick={clearQueryInput} aria-label="Clear search"><X size={16} /></button>}
           <button type="button" className={"kinoma-search-control__voice" + (voiceListening ? " is-listening" : "")} onClick={startVoiceSearch} disabled={!voiceSearchSupported} aria-label={voiceListening ? "Listening for search terms" : voiceSearchSupported ? "Search by voice" : "Voice search is not supported on this device"} title={voiceSearchSupported ? "Search by voice" : "Voice search unavailable on this device"}>
             {voiceListening ? <MicOff size={18} /> : <Mic size={18} />}
           </button>
-          <button type="submit" className="kinoma-search-control__submit">Search</button>
+          <button type="submit" className="kinoma-search-control__submit"><span className="kinoma-search-control__sheen" aria-hidden="true" /><span>Search</span><ArrowRight size={15} aria-hidden="true" /></button>
         </form>
         {!isSearching && <button type="button" className="panda-search-surprise" onClick={surpriseMe} disabled={!surprisePool.length} aria-label="Pick a surprise title and open its details page"><Sparkles size={15} /> Surprise Me <span>Pick something for me</span></button>}
       </header>
