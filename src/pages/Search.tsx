@@ -118,8 +118,24 @@ export function Search() {
   }, [submittedQuery]);
 
   useEffect(() => {
-    if (inputRef.current && submittedQuery) inputRef.current.focus();
-  }, [submittedQuery]);
+    if (!submittedQuery || !isAndroidTV) {
+      if (submittedQuery && inputRef.current) inputRef.current.focus();
+      return;
+    }
+    // On TV, move focus to the first result instead of snapping back to the
+    // search input while the results rail is scrolling into view.
+    if (loading) return;
+    const frame = window.requestAnimationFrame(() => {
+      const firstCard = resultsRef.current?.querySelector<HTMLAnchorElement>('.kinoma-search-card');
+      if (firstCard) {
+        firstCard.focus({ preventScroll: true });
+        firstCard.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      } else {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [submittedQuery, isAndroidTV, loading, visibleResults.length]);
 
   useEffect(() => {
     if ((window as Window & { isKinomaAndroidTV?: boolean }).isKinomaAndroidTV) {
@@ -238,7 +254,7 @@ export function Search() {
         </form>
         {!isSearching && <button type="button" className="panda-search-surprise" onClick={surpriseMe} disabled={!surprisePool.length} aria-label="Pick a surprise title and open its details page"><Sparkles size={15} /> Surprise Me <span>Pick something for me</span></button>}
       </header>
-      {!isSearching && recentSearches.length > 0 && <section className="kinoma-search-recent" aria-label="Recent searches"><div className="kinoma-search-recent__label"><Clock3 size={14} /> Recent</div><div className="kinoma-search-recent__items">{recentSearches.slice(0, 5).map(item => <button key={item} type="button" onClick={() => chooseRecent(item)}><Clock3 className="kinoma-search-recent__history-icon" size={16} aria-hidden="true" style={{ display: "none" }} />{item}</button>)}<button type="button" className="kinoma-search-recent__clear" onClick={clearRecent}>Clear</button></div></section>}
+      {!isSearching && recentSearches.length > 0 && <section className="kinoma-search-recent" aria-label="Recent searches"><div className="kinoma-search-recent__label"><Clock3 size={14} /> Recent</div><div className="kinoma-search-recent__items">{recentSearches.slice(0, 5).map(item => <button key={item} type="button" onClick={() => chooseRecent(item)}><Clock3 className="kinoma-search-recent__history-icon" size={16} aria-hidden="true" />{item}</button>)}<button type="button" className="kinoma-search-recent__clear" onClick={clearRecent}>Clear</button></div></section>}
       <section ref={resultsRef} className="kinoma-search-results" id="search-results">
         <div className="kinoma-search-results__heading"><div><span className="kinoma-eyebrow">{isSearching ? 'Your search' : 'Live discovery'}</span><h2>{isSearching ? 'Matches' : isAndroidTV ? 'Popular Searches' : filter === 'movie' ? 'Movies' : filter === 'series' ? 'TV shows' : 'Trending now'}</h2></div>{!isSearching && <Sparkles size={18} />}</div>
         {!loading && !error && results.length > 0 && <div className="kinoma-search-toolbar"><div className="kinoma-search-filters" role="tablist" aria-label="Filter search results"><button type="button" role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}><Filter size={13} /> All <span>{results.length}</span></button><button type="button" role="tab" aria-selected={filter === 'movie'} className={filter === 'movie' ? 'is-active' : ''} onClick={() => setFilter('movie')}>Movies <span>{results.filter(item => item.type === 'movie').length}</span></button><button type="button" role="tab" aria-selected={filter === 'series'} className={filter === 'series' ? 'is-active' : ''} onClick={() => setFilter('series')}>Series <span>{results.filter(item => item.type === 'series').length}</span></button></div><span className="kinoma-search-toolbar__count">{visibleResults.length} {visibleResults.length === 1 ? 'title' : 'titles'}</span></div>}
