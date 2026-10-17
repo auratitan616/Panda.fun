@@ -99,7 +99,7 @@ html.tv-mode .panda-tv-app-shell .kinoma-home-hero__actions .kinoma-3d-button { 
 html.tv-mode .panda-tv-app-shell .kinoma-home-hero__actions .kinoma-3d-button:first-child { background:linear-gradient(90deg,#0052d4 0%,#4364f7 50%,#e21170 100%); color:#fff; }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__inner { width:100%; }
 html.tv-mode .panda-tv-app-shell .panda-home-top10__rail { overflow-x:auto; gap:18px; padding:10px 8px 20px; }
-html.tv-mode .panda-tv-app-shell .panda-home-top10__rank { flex:0 0 clamp(180px,13.2vw,232px); }
+html.tv-mode .panda-tv-app-shell .panda-home-top10__rank { flex:0 0 clamp(220px,17vw,300px); }
 html.tv-mode .panda-tv-app-shell .panda-home-top10__number { -webkit-text-stroke:2px rgba(255,255,255,.92); }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__welcome { margin-top:34px; }
 html.tv-mode .panda-tv-app-shell .panda-home-v2__section { margin-block:34px; }
@@ -107,7 +107,7 @@ html.tv-mode .panda-tv-app-shell .panda-home-v2__section-title h3 { font-size:24
 html.tv-mode .panda-tv-app-shell .panda-home-v2__rail {
   display:grid;
   grid-auto-flow:column;
-  grid-auto-columns:clamp(180px, 13.2vw, 232px);
+  grid-auto-columns:clamp(220px, 17vw, 300px);
   grid-template-columns:none;
   gap:18px;
   overflow-x:auto;
@@ -243,4 +243,51 @@ html.tv-mode .panda-tv-app-shell .kinoma-details-seasons .kinoma-season-picker {
 html.tv-mode .panda-tv-app-shell .kinoma-details-seasons .kinoma-details-section__heading--episodes { min-height:66px; }
 @media (max-width:1100px) {
   html.tv-mode .panda-tv-app-shell .kinoma-details-seasons { grid-template-columns:150px minmax(0,1fr); column-gap:18px; }
+}
+
+/* Voice search controls are sized for a 10-foot viewing distance. */
+html.tv-mode .panda-tv-app-shell .kinoma-search-control {
+  min-height:68px;
+  gap:12px;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control > input {
+  min-width:0;
+  min-height:60px;
+  font-size:22px;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__voice {
+  display:grid;
+  place-items:center;
+  flex:0 0 52px;
+  width:52px;
+  height:52px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:50%;
+  background:#151515;
+  color:#fff;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__voice:disabled {
+  opacity:.42;
+  cursor:not-allowed;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__voice.is-listening {
+  background:#6b163f;
+  border-color:#f472b6;
+  box-shadow:0 0 0 4px rgba(244,114,182,.18);
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__submit {
+  min-width:132px;
+  min-height:52px;
+  border-radius:999px;
+  font-size:17px;
+  font-weight:750;
+}
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__voice:focus-visible,
+html.tv-mode .panda-tv-app-shell .kinoma-search-control__submit:focus-visible {
+  outline:3px solid #fff;
+  outline-offset:3px;
+}
+@media (max-width:1100px) {
+  html.tv-mode .panda-tv-app-shell .panda-home-v2__rail { grid-auto-columns:clamp(200px,24vw,270px); }
+  html.tv-mode .panda-tv-app-shell .panda-home-top10__rank { flex-basis:clamp(200px,24vw,270px); }
 }
