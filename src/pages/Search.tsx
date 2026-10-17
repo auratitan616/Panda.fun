@@ -37,7 +37,7 @@ function ContentCard({ item, priority = false }: { key?: React.Key; item: Search
 }
 
 export function Search() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const initialQuery = useMemo(() => new URLSearchParams(window.location.search).get('keyword')?.trim() || '', []);
   const [query, setQuery] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
@@ -50,6 +50,10 @@ export function Search() {
     const requestedType = new URLSearchParams(window.location.search).get('type');
     return requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all';
   });
+  useEffect(() => {
+    const requestedType = new URLSearchParams(location.split('?')[1] || '').get('type');
+    setFilter(requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all');
+  }, [location]);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
   const isSearching = submittedQuery.length > 0;
