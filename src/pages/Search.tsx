@@ -252,10 +252,10 @@ export function Search() {
       <header className="kinoma-search-head">
         <div className="kinoma-search-head__copy">
           <span className="kinoma-eyebrow">{isSearching ? 'Search results' : 'Discover'}</span>
-          <h1>{isSearching ? 'Results for “' + submittedQuery + '”' : filter === 'movie' ? 'Movies for tonight' : filter === 'series' ? 'TV shows to get into' : 'What are we watching?'}</h1>
-          <p>{isSearching ? 'Movies, series and anime matching your search.' : 'Search by title, genre, or cast. Find your next watch.'}</p>
+          <h1>{isSearching ? 'Results for “' + submittedQuery + '”' : filter === 'movie' ? 'Movies for tonight' : filter === 'series' ? 'TV shows to get into' : 'Your next favourite starts here.'}</h1>
+          <p>{isSearching ? 'Movies, series and anime matching your search.' : 'Discover films, series and anime worth staying up for.'}</p>
         </div>
-        <form className="kinoma-search-control is-open" onSubmit={submitSearch}>
+        <form className="kinoma-search-control is-open" onSubmit={submitSearch} role="search" aria-label="Search the catalogue">
           <SearchIcon size={18} /><input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={handleInputKeyDown} placeholder="Search movies, series or anime" aria-label="Search movies, series or anime" autoComplete="off" />
           {query && <button type="button" className="kinoma-search-control__clear" onClick={clearQueryInput} aria-label="Clear search"><X size={16} /></button>}
           <button type="button" className={"kinoma-search-control__voice" + (voiceListening ? " is-listening" : "")} onClick={startVoiceSearch} disabled={!voiceSearchSupported} aria-label={voiceListening ? "Listening for search terms" : voiceSearchSupported ? "Search by voice" : "Voice search is not supported on this device"} title={voiceSearchSupported ? "Search by voice" : "Voice search unavailable on this device"}>
