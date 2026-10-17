@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, Component } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Switch, useLocation } from 'wouter';
 import { AnimatePresence, motion } from 'motion/react';
 import { SWRConfig } from 'swr';
@@ -106,7 +106,7 @@ function AnimatedRoutes() {
   );
 }
 
-class AppErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
+class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
   static getDerivedStateFromError() { return { hasError: true }; }
   componentDidCatch(error: unknown) { console.error('[Panda.fun] App render error:', error); }
