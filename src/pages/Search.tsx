@@ -56,7 +56,9 @@ export function Search() {
   const [results, setResults] = useState<SearchItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [retryNonce, setRetryNonce] = useState(0);\n  const [voiceListening, setVoiceListening] = useState(false);\n  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
+  const [voiceListening, setVoiceListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const [filter, setFilter] = useState<'all' | 'movie' | 'series'>(() => {
     const requestedType = new URLSearchParams(window.location.search).get('type');
     return requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all';
@@ -129,6 +131,11 @@ export function Search() {
 
   const startVoiceSearch = () => {
     if (!SpeechRecognitionApi) return;
+    if (voiceListening) {
+      recognitionRef.current?.stop();
+      setVoiceListening(false);
+      return;
+    }
     recognitionRef.current?.stop();
     const recognition = new SpeechRecognitionApi();
     recognitionRef.current = recognition;
