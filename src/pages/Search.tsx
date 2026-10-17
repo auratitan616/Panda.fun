@@ -10,7 +10,7 @@ import { preferencesUtil } from '../lib/preferences';
 import { api, MovieApiError } from '../lib/api';
 import type { AnimeItem } from '../types';
 
-type SearchItem = { id: string; title: string; type: 'movie' | 'series'; meta: string; image?: string; href: string; rating?: number; year?: number; };
+type SearchItem = { key?: React.Key; id: string; title: string; type: 'movie' | 'series'; meta: string; image?: string; href: string; rating?: number; year?: number; };
 const titleOf = (item: AnimeItem) => typeof item.title === 'string' ? item.title : item.title.english || item.title.romaji || item.title.native || 'Untitled';
 const mapItem = (item: AnimeItem): SearchItem => {
   const type = item.contentType === 'movie' ? 'movie' : 'series';
@@ -22,7 +22,7 @@ const mapItem = (item: AnimeItem): SearchItem => {
     image: item.image,
     rating: Number(item.rating || 0) || 0,
     year: item.releaseDate ? Number(String(item.releaseDate).slice(0, 4)) || undefined : undefined,
-    href: buildDetailsHref(item.title, type, item.id),
+    href: buildDetailsHref(titleOf(item), type, item.id),
   };
 };
 
