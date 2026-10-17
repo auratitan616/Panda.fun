@@ -9362,7 +9362,7 @@ body,
   .panda-mobile-bottom-nav::before {
     content: "";
     position: absolute;
-    z-index: -1;
+    z-index: 1;
     left: -1px;
     right: -1px;
     top: -1px;
@@ -9372,9 +9372,4 @@ body,
     pointer-events: none;
   }
   .panda-mobile-bottom-nav__item.is-active { background: rgba(184,77,65,.12); }
-}
-.panda-mobile-home-only { display: none; }
-@media (max-width: 767px) {
-  .panda-mobile-home-only { display: block; }
-  .panda-desktop-home-only { display: none !important; }
 }
