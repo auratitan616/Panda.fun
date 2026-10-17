@@ -10,6 +10,15 @@ export const ITEMS = [
   { href: '/settings', label: 'Settings', Icon: Settings },
 ];
 
+// Secondary destinations kept available to footer/about navigation and its contract tests.
+export const ABOUT_ITEMS = [
+  { href: '/about', label: 'About', Icon: Info },
+  { href: '/docs', label: 'Docs', Icon: FileText },
+  { href: '/terms', label: 'Terms', Icon: FileText },
+  { href: '/privacy', label: 'Privacy', Icon: Shield },
+  { href: '/contact', label: 'Contact', Icon: UserRound },
+];
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [expanded, setExpanded] = useState(false);
