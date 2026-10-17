@@ -105,7 +105,7 @@ export function MobileHome({
   };
 
   return (
-    <main className="panda-mobile-home">
+    <div className="panda-mobile-home">
       <section className="panda-mobile-featured" aria-label="Featured titles">
         <div className="panda-mobile-featured__head">
           <span className="panda-mobile-eyebrow">YOUR NEXT WATCH</span>
@@ -138,9 +138,7 @@ export function MobileHome({
       </section>
 
       <MobileRail title="Top 10" items={topTen} topTen />
-      <section className="panda-mobile-home__collection panda-mobile-home__continue">
-        <ModernContinueWatching />
-      </section>
+      <ModernContinueWatching />
       <MobileRail title="Trending Now" items={trending} />
       <MobileRail title="New on Netflix" items={uniqueItems(newOnNetflix)} />
       <MobileRail title="New on Disney+" items={uniqueItems(newOnDisneyPlus)} />
