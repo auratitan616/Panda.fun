@@ -68,6 +68,9 @@ export function Search() {
     setFilter(requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all');
   }, [location]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const speechWindow = window as Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
+  const SpeechRecognitionApi = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+  const voiceSearchSupported = Boolean(SpeechRecognitionApi);
   const resultsRef = useRef<HTMLElement>(null);
   const isSearching = submittedQuery.length > 0;
   const visibleResults = useMemo(() => {
