@@ -35,9 +35,11 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(mobileHome).toContain('<ModernContinueWatching />');
     expect(mobileHome).toContain('buildDetailsHref');
     expect(homeStyles).toContain('aspect-ratio: 16 / 9');
-    expect(homeStyles).toContain('flex: 0 0 68vw;');
-    expect(homeStyles).toContain('padding-inline: 16vw;');
+    expect(homeStyles).toContain('flex: 0 0 74vw;');
+    expect(homeStyles).toContain('padding-inline: 13vw;');
     expect(homeStyles).toContain('scroll-snap-stop: always;');
+    expect(homeStyles).toContain('transform: scale(.82);');
+    expect(homeStyles).toContain('opacity: .48;');
     expect(homeStyles).toContain('overflow-x: clip');
     expect(mobileHome).toContain('const viewportRect = viewport.getBoundingClientRect()');
     expect(mobileHome).toContain('viewport.scrollLeft += cardCenter - viewportCenter');
