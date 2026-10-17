@@ -34,7 +34,7 @@ describe('MYpanda.fun mobile shell contract', () => {
     }
     expect(mobileHome).toContain('<ModernContinueWatching />');
     expect(mobileHome).toContain('buildDetailsHref');
-    expect(homeStyles).toContain('aspect-ratio: 16 / 9');
+    expect(homeStyles).toContain('aspect-ratio: 4 / 5');
     expect(homeStyles).toContain('flex: 0 0 74vw;');
     expect(homeStyles).toContain('padding-inline: 13vw;');
     expect(homeStyles).toContain('scroll-snap-stop: always;');
