@@ -45,6 +45,16 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(mobileHome).toContain('viewport.scrollLeft += cardCenter - viewportCenter');
   });
 
+  it('keeps search compact and removes the mascot in favor of the animated metal button', () => {
+    expect(search).not.toContain('panda-search-companion');
+    expect(search).toContain('Search by title, genre, or cast.');
+    expect(search).toContain('kinoma-search-control__sheen');
+    expect(search).toContain('<ArrowRight size={15}');
+    expect(read('../../index.css')).toContain('panda-search-beam-spin 1.96s linear infinite');
+    expect(read('../../index.css')).toContain('panda-search-metal-sweep');
+    expect(read('../../index.css')).toContain('prefers-reduced-motion: reduce');
+  });
+
   it('preserves the existing search API, recent searches, and supported filters', () => {
     expect(search).toContain('api.search(submittedQuery, controller.signal)');
     expect(search).toContain('preferencesUtil.addRecentSearch(clean)');
