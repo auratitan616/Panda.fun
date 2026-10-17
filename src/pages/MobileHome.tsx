@@ -32,7 +32,7 @@ export function MobileHome({ items }: MobileHomeProps) {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const viewportCenter = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
-    const cards = Array.from(viewport.querySelectorAll<HTMLElement>('.panda-mobile-featured__card'));
+    const cards = Array.from(viewport.querySelectorAll('.panda-mobile-featured__card')) as HTMLElement[];
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
     cards.forEach((card, index) => {
