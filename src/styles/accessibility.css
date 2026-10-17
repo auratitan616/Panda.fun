@@ -69,3 +69,28 @@ html,body,#root{background:#000!important}
 .kinoma-details-seasons .kinoma-episode-list--list .kinoma-episode-card:hover{background:#090909}
 @media(max-width:780px){.kinoma-details-seasons .kinoma-episode-list--list .kinoma-episode-meta span:first-child{min-width:56px;padding:5px 7px;font-size:10px}.kinoma-details-seasons .kinoma-episode-list--list .kinoma-episode-meta span:last-child{left:16px;bottom:16px;padding:4px 7px;font-size:10px}}
 @media(max-width:560px){.kinoma-details-seasons .kinoma-episode-list--list .kinoma-episode-meta span:first-child{min-width:0;padding:5px 7px;border-radius:6px;font-size:9px}.kinoma-details-seasons .kinoma-episode-list--list .kinoma-episode-meta span:last-child{left:14px;bottom:14px;padding:4px 6px;font-size:9px}}
+
+
+/* Android TV: keyboard-equivalent focus visibility for custom card controls. */
+.tv-mode :where(
+  [role="button"][tabindex="0"],
+  [role="link"][tabindex="0"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid rgba(232, 208, 192, 0.96);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.92), 0 0 24px rgba(232, 208, 192, 0.18);
+  scroll-margin: 28px;
+}
+
+.tv-mode :where(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(232, 208, 192, 0.96);
+  outline-offset: 4px;
+  scroll-margin: 28px;
+}
+
+/* Keep focused artwork visible when a card scales, without clipping its outline. */
+.tv-mode :where([role="button"][tabindex="0"], [role="link"][tabindex="0"]):focus-visible {
+  position: relative;
+  z-index: 5;
+}
