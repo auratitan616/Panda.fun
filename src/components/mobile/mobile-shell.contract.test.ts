@@ -53,9 +53,10 @@ describe('MYpanda.fun mobile shell contract', () => {
     expect(read('../../index.css')).toContain('.kinoma-search-loading');
   });
 
-  it('keeps search compact, mascot-free, and refined with a visible metal border beam', () => {
+  it('keeps search mascot-free with a cinematic hero and visible metal border beam', () => {
     expect(search).not.toContain('panda-search-companion');
-    expect(search).toContain('Search by title, genre, or cast.');
+    expect(search).toContain('Discover films, series and anime worth staying up for.');
+    expect(search).toContain('role="search" aria-label="Search the catalogue"');
     expect(search).toContain('kinoma-search-control__sheen');
     expect(search).toContain('<ArrowRight size={15}');
     expect(read('../../index.css')).toContain('panda-search-beam-spin 1.96s linear infinite');
