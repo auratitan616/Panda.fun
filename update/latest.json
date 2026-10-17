@@ -1,9 +1,9 @@
 {
-  "latestVersionCode": 340,
-  "latestVersionName": "0.0.4",
-  "releaseTag": "v0.0.4",
-  "releaseNotes": "Panda.fun Android TV 0.0.4",
-  "apkUrl": "https://github.com/titan717/Panda.fun/releases/download/v0.0.4/Panda.fun-Android-TV.apk",
-  "sha256": "07a96caf5550a189a6ab42ad83d2b3d082c8c32087496ce86de5b6780880c1e6",
+  "latestVersionCode": 1205,
+  "latestVersionName": "0.0.6",
+  "releaseTag": "v0.0.6",
+  "releaseNotes": "Panda.fun Android TV 0.0.6",
+  "apkUrl": "https://github.com/titan717/Panda.fun/releases/download/v0.0.6/Panda.fun-Android-TV.apk",
+  "sha256": "685d864352c1b40f7006a770fff4990f4a11469f11237c5a656b80b9d0f504e7",
   "mandatory": false
 }
