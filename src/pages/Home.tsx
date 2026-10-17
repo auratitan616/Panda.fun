@@ -189,6 +189,7 @@ function PandaRail({
 }
 
 export function Home() {
+  const [isMobileLayout, setIsMobileLayout] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
   const [home, setHome] = useState<any>(null);
   const [newOnNetflix, setNewOnNetflix] = useState<MovieApiMedia[]>([]);
   const [newOnDisneyPlus, setNewOnDisneyPlus] = useState<MovieApiMedia[]>([]);
@@ -200,6 +201,13 @@ export function Home() {
   const [trailerReady, setTrailerReady] = useState(false);
   const trailerFrameRef = useRef<HTMLIFrameElement | null>(null);
   
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateLayout = () => setIsMobileLayout(media.matches);
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
+
   const [hoverTrailer, setHoverTrailer] = useState<MovieApiMedia | null>(null);
   const [hoverTrailerUrl, setHoverTrailerUrl] = useState('');
   const hoverTrailerTimer = useRef<number | null>(null);
@@ -317,12 +325,7 @@ export function Home() {
     hoverTrailerController.current = null;
   }, []);
 
-  return (
-    <>
-      <div className="panda-mobile-home-only">
-        <MobileHome items={[...(featured ? [featured] : []), ...trending, ...popularMovies, ...popularTv]} />
-      </div>
-      <div className="panda-desktop-home-only">
+  return isMobileLayout ? <MobileHome items={[...(featured ? [featured] : []), ...trending, ...popularMovies, ...popularTv]} /> : (
     <main className="kinoma-home">
       <div className="kinoma-home__ambient" aria-hidden="true">
         <span className="kinoma-home__ambient-orb kinoma-home__ambient-orb--one" />
@@ -471,7 +474,5 @@ export function Home() {
         </div>
       </div>
     </main>
-      </div>
-    </>
   );
 }
