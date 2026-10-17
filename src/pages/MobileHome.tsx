@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { ArrowRight, Search, UserRound } from 'lucide-react';
 import { KinomaLogo } from '../components/ui/KinomaLogo';
@@ -19,12 +19,29 @@ function imageFor(item: MovieApiMedia) {
 
 export function MobileHome({ items }: MobileHomeProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(2);
   const featuredItems = items.filter((item, index, all) => item?.id && (item.poster || item.backdrop) && all.findIndex(other => other.id === item.id) === index).slice(0, 5);
 
   useEffect(() => {
     const viewport = viewportRef.current;
     if (viewport && featuredItems.length > 2) viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+    setActiveIndex(Math.min(2, Math.max(0, featuredItems.length - 1)));
   }, [featuredItems.length]);
+
+  const updateActiveCard = () => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const center = viewport.scrollLeft + viewport.clientWidth / 2;
+    const cards = Array.from(viewport.querySelectorAll<HTMLElement>('.panda-mobile-featured__card'));
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    cards.forEach((card, index) => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - center);
+      if (distance < closestDistance) { closestDistance = distance; closestIndex = index; }
+    });
+    setActiveIndex(current => current === closestIndex ? current : closestIndex);
+  };
 
   return (
     <main className="panda-mobile-home">
@@ -43,7 +60,7 @@ export function MobileHome({ items }: MobileHomeProps) {
           <Link href="/search" aria-label="Search movies and shows" className="panda-mobile-featured__search"><Search size={18} /></Link>
         </div>
         {featuredItems.length > 0 ? (
-          <div className="panda-mobile-featured__viewport" ref={viewportRef}>
+          <div className="panda-mobile-featured__viewport" ref={viewportRef} onScroll={updateActiveCard}>
             <div className="panda-mobile-featured__track">
               {featuredItems.map((item, index) => {
                 const image = imageFor(item);
@@ -51,7 +68,7 @@ export function MobileHome({ items }: MobileHomeProps) {
                   <Link
                     key={item.id}
                     href={buildDetailsHref(item, item.type === 'movie' ? 'movie' : 'series')}
-                    className={'panda-mobile-featured__card' + (index === Math.min(2, featuredItems.length - 1) ? ' is-initial-center' : '')}
+                    className={'panda-mobile-featured__card' + (index === activeIndex ? ' is-initial-center' : '')}
                     aria-label={'Open ' + item.title}
                     onClick={() => { /* Wouter handles navigation without reloading the app. */ }}
                   >
