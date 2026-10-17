@@ -238,7 +238,7 @@ export function Details() {
     <main className="kinoma-details-page">
       {loading && <div className="panda-state-card" role="status"><span className="panda-state-card__spinner" aria-hidden="true" /><div><strong>Loading title</strong><small>Fetching the latest details…</small></div></div>}
       {error && !loading && <div className="panda-state-card is-error" role="alert"><div><strong>We couldn't load this title.</strong><small>{error}</small></div><button type="button" onClick={() => setRetryKey(value => value + 1)}>Retry</button></div>}
-      <section className="kinoma-details-hero kinoma-details-hero--trailer">
+      <section id="trailers-more" className="kinoma-details-hero kinoma-details-hero--trailer">
         <div className="kinoma-details-hero__trailer-bg" aria-label={title + ' trailer preview'}>
           {trailer?.trailer?.embedUrl && !trailerFailed ? <iframe
             src={trailerSrc(trailer.trailer.embedUrl)}
@@ -272,8 +272,14 @@ export function Details() {
         </div>
       </section>
 
+      <nav className="kinoma-tv-details-tabs" aria-label="Title sections">
+        {kind === 'series' && <a href="#episodes">Episodes</a>}
+        <a href="#more-like-this">More Like This</a>
+        <a href="#trailers-more">Trailers &amp; More</a>
+      </nav>
+
       {kind === 'series' && (
-        <section className="kinoma-details-section kinoma-details-seasons">
+        <section id="episodes" className="kinoma-details-section kinoma-details-seasons">
           <div className="kinoma-details-section__heading kinoma-details-section__heading--episodes">
             <div className="kinoma-season-heading">
               <span className="kinoma-section-accent" aria-hidden="true" />
@@ -302,6 +308,14 @@ export function Details() {
               </button>
             </div>
           </div>
+          <nav className="kinoma-tv-season-rail" aria-label="Season navigation">
+            {seasonItems.map(season => (
+              <button type="button" key={season.seasonNumber} className={selectedSeason === season.seasonNumber ? 'is-selected' : ''} aria-pressed={selectedSeason === season.seasonNumber} onClick={() => setSelectedSeason(season.seasonNumber)}>
+                <span>Season {season.seasonNumber}</span>
+                <small>{season.episodeCount} {season.episodeCount === 1 ? 'Ep' : 'Eps'}</small>
+              </button>
+            ))}
+          </nav>
           <div ref={episodeRailRef} className={'kinoma-episode-list kinoma-episode-list--' + episodeView}>
             {(modelSeasons.find(s => s.number === selectedSeason)?.episodes || []).map(ep => (
               <button
@@ -344,7 +358,7 @@ export function Details() {
         </section>
       )}
 
-      <section className="kinoma-details-section kinoma-details-more-section">
+      <section id="more-like-this" className="kinoma-details-section kinoma-details-more-section">
         <div className="kinoma-details-section__heading kinoma-details-section__heading--more"><div><span className="kinoma-section-accent" aria-hidden="true" /><div><span>DISCOVER MORE</span><h2>More Like This</h2></div></div><small>Recommended for you</small></div>
         <div className="kinoma-more-rail kinoma-more-grid-3rows">
           {recommendations.slice(0, 15).map((item, i) => {
