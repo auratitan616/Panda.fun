@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'wouter';
 import { ArrowRight, Search, UserRound } from 'lucide-react';
 import { KinomaLogo } from '../components/ui/KinomaLogo';
@@ -18,7 +18,13 @@ function imageFor(item: MovieApiMedia) {
 }
 
 export function MobileHome({ items }: MobileHomeProps) {
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const featuredItems = items.filter((item, index, all) => item?.id && (item.poster || item.backdrop) && all.findIndex(other => other.id === item.id) === index).slice(0, 5);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (viewport && featuredItems.length > 2) viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+  }, [featuredItems.length]);
 
   return (
     <main className="panda-mobile-home">
@@ -37,7 +43,7 @@ export function MobileHome({ items }: MobileHomeProps) {
           <Link href="/search" aria-label="Search movies and shows" className="panda-mobile-featured__search"><Search size={18} /></Link>
         </div>
         {featuredItems.length > 0 ? (
-          <div className="panda-mobile-featured__viewport">
+          <div className="panda-mobile-featured__viewport" ref={viewportRef}>
             <div className="panda-mobile-featured__track">
               {featuredItems.map((item, index) => {
                 const image = imageFor(item);
