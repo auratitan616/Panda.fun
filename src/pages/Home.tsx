@@ -189,7 +189,7 @@ function PandaRail({
 }
 
 export function Home() {
-  const [isMobileLayout, setIsMobileLayout] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+  const [isMobileLayout, setIsMobileLayout] = useState(() => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches);
   const [home, setHome] = useState<any>(null);
   const [newOnNetflix, setNewOnNetflix] = useState<MovieApiMedia[]>([]);
   const [newOnDisneyPlus, setNewOnDisneyPlus] = useState<MovieApiMedia[]>([]);
@@ -202,6 +202,7 @@ export function Home() {
   const trailerFrameRef = useRef<HTMLIFrameElement | null>(null);
   
   useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
     const media = window.matchMedia('(max-width: 767px)');
     const updateLayout = () => setIsMobileLayout(media.matches);
     media.addEventListener('change', updateLayout);
