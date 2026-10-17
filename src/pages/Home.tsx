@@ -200,7 +200,15 @@ export function Home() {
   const soundEnabled = true;
   const [trailerReady, setTrailerReady] = useState(false);
   const trailerFrameRef = useRef<HTMLIFrameElement | null>(null);
+  const watchButtonRef = useRef<HTMLAnchorElement | null>(null);
   
+  useEffect(() => {
+    if ((window as Window & { isKinomaAndroidTV?: boolean }).isKinomaAndroidTV) {
+      const frame = window.requestAnimationFrame(() => watchButtonRef.current?.focus({ preventScroll: true }));
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, []);
+
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return;
     const media = window.matchMedia('(max-width: 767px)');
@@ -350,7 +358,7 @@ export function Home() {
             <h1 id="kinoma-home-title">{featured?.title || 'Something good is waiting.'}</h1>
             <p>{featured?.overview || error || 'Movies, series and stories worth pressing play for. Discover something, save it, and come back whenever you like.'}</p>
             <div className="kinoma-home-hero__actions">
-              <Link href={featuredWatchUrl} className="kinoma-3d-button"><span className="kinoma-3d-button__face"><Play size={16} fill="currentColor" /> Watch Now</span><span className="kinoma-3d-button__depth" aria-hidden="true" /></Link>
+              <Link ref={watchButtonRef} href={featuredWatchUrl} className="kinoma-3d-button"><span className="kinoma-3d-button__face"><Play size={16} fill="currentColor" /> Watch Now</span><span className="kinoma-3d-button__depth" aria-hidden="true" /></Link>
               <button type="button" onClick={toggleFeaturedList} aria-pressed={isInList} className={`kinoma-3d-button kinoma-3d-button--secondary${isInList ? ' is-added' : ''}`}><span className="kinoma-3d-button__face">{isInList ? <><span>✓</span> In My List</> : <><Plus size={16} /> Add to My List</>}</span><span className="kinoma-3d-button__depth" aria-hidden="true" /></button>
             </div>
           </div>

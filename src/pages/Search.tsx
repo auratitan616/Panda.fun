@@ -1,7 +1,7 @@
 
 import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Footer } from '../components/ui/Footer';
-import { Clock3, Filter, Search as SearchIcon, Sparkles, X } from 'lucide-react';
+import { Clock3, Filter, Mic, MicOff, Search as SearchIcon, Sparkles, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { updateSEO } from '../lib/seo';
 import { trackGAEvent } from '../lib/analytics';
@@ -11,6 +11,17 @@ import { api, MovieApiError } from '../lib/api';
 import type { AnimeItem } from '../types';
 
 type SearchItem = { key?: React.Key; id: string; title: string; type: 'movie' | 'series'; meta: string; image?: string; href: string; rating?: number; year?: number; };
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 const titleOf = (item: AnimeItem) => typeof item.title === 'string' ? item.title : item.title.english || item.title.romaji || item.title.native || 'Untitled';
 const mapItem = (item: AnimeItem): SearchItem => {
   const type = item.contentType === 'movie' ? 'movie' : 'series';
@@ -46,6 +57,8 @@ export function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryNonce, setRetryNonce] = useState(0);
+  const [voiceListening, setVoiceListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const [filter, setFilter] = useState<'all' | 'movie' | 'series'>(() => {
     const requestedType = new URLSearchParams(window.location.search).get('type');
     return requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all';
@@ -55,6 +68,9 @@ export function Search() {
     setFilter(requestedType === 'movie' || requestedType === 'series' ? requestedType : 'all');
   }, [location]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const speechWindow = window as Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
+  const SpeechRecognitionApi = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
+  const voiceSearchSupported = Boolean(SpeechRecognitionApi);
   const resultsRef = useRef<HTMLElement>(null);
   const isSearching = submittedQuery.length > 0;
   const visibleResults = useMemo(() => {
@@ -100,7 +116,57 @@ export function Search() {
     return () => window.cancelAnimationFrame(frame);
   }, [submittedQuery]);
 
-  useEffect(() => { if (inputRef.current && submittedQuery) inputRef.current.focus(); }, [submittedQuery]);
+  useEffect(() => {
+    if (inputRef.current && submittedQuery) inputRef.current.focus();
+  }, [submittedQuery]);
+
+  useEffect(() => {
+    if ((window as Window & { isKinomaAndroidTV?: boolean }).isKinomaAndroidTV) {
+      const frame = window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, []);
+
+  useEffect(() => () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+  }, []);
+
+  const startVoiceSearch = () => {
+    if (!SpeechRecognitionApi) return;
+    if (voiceListening) {
+      recognitionRef.current?.stop();
+      setVoiceListening(false);
+      return;
+    }
+    recognitionRef.current?.stop();
+    const recognition = new SpeechRecognitionApi();
+    recognitionRef.current = recognition;
+    recognition.lang = navigator.language || 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = event => {
+      const transcript = event.results[0]?.[0]?.transcript?.trim();
+      if (transcript) setQuery(transcript);
+      setVoiceListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onerror = () => {
+      setVoiceListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onend = () => {
+      setVoiceListening(false);
+      if (recognitionRef.current === recognition) recognitionRef.current = null;
+    };
+    try {
+      recognition.start();
+      setVoiceListening(true);
+    } catch {
+      setVoiceListening(false);
+      recognitionRef.current = null;
+    }
+  };
 
   const submitSearch = (event?: FormEvent) => {
     event?.preventDefault();
@@ -164,6 +230,9 @@ export function Search() {
         <form className="kinoma-search-control is-open" onSubmit={submitSearch}>
           <SearchIcon size={18} /><input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={handleInputKeyDown} placeholder="Search movies, series or anime" aria-label="Search movies, series or anime" autoComplete="off" />
           {query && <button type="button" className="kinoma-search-control__clear" onClick={clearQueryInput} aria-label="Clear search"><X size={16} /></button>}
+          <button type="button" className={"kinoma-search-control__voice" + (voiceListening ? " is-listening" : "")} onClick={startVoiceSearch} disabled={!voiceSearchSupported} aria-label={voiceListening ? "Listening for search terms" : voiceSearchSupported ? "Search by voice" : "Voice search is not supported on this device"} title={voiceSearchSupported ? "Search by voice" : "Voice search unavailable on this device"}>
+            {voiceListening ? <MicOff size={18} /> : <Mic size={18} />}
+          </button>
           <button type="submit" className="kinoma-search-control__submit">Search</button>
         </form>
         {!isSearching && <button type="button" className="panda-search-surprise" onClick={surpriseMe} disabled={!surprisePool.length} aria-label="Pick a surprise title and open its details page"><Sparkles size={15} /> Surprise Me <span>Pick something for me</span></button>}

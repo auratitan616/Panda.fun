@@ -83,7 +83,11 @@ export function handleTVRemoteKey(event: KeyboardEvent): boolean {
   // Layout currently focuses the main region on route changes. Recover from
   // that non-interactive focus target without jumping to an arbitrary control.
   if (!current || !isVisibleFocusable(current)) {
-    const first = Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+    const main = document.querySelector<HTMLElement>('#panda-main-content');
+    const mainCandidates = main
+      ? Array.from(main.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(isVisibleFocusable)
+      : [];
+    const first = mainCandidates[0] || Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
       .find(isVisibleFocusable);
     if (!first) return false;
     event.preventDefault();

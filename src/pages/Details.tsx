@@ -63,6 +63,7 @@ export function Details() {
   const [episodeSearch, setEpisodeSearch] = useState('');
   const [episodeSort, setEpisodeSort] = useState<'asc' | 'desc'>('asc');
   const episodeRailRef = useRef<HTMLDivElement | null>(null);
+  const watchButtonRef = useRef<HTMLButtonElement | null>(null);
   const [showEpisodeRailHint, setShowEpisodeRailHint] = useState(false);
   const kind = kindOf(type, data);
 
@@ -195,6 +196,12 @@ export function Details() {
     rail.scrollBy({ left: delta, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    if (loading || error || !(window as Window & { isKinomaAndroidTV?: boolean }).isKinomaAndroidTV) return;
+    const frame = window.requestAnimationFrame(() => watchButtonRef.current?.focus({ preventScroll: true }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [loading, error, id]);
+
   const watch = () => {
     trackGAEvent('select_content', { content_type: kind });
     if (kind === 'movie') {
@@ -264,7 +271,7 @@ export function Details() {
             </div>
             <p className="kinoma-details-synopsis">{synopsis}</p>
             <div className="kinoma-details-actions">
-              <button className="kinoma-details-3d-button kinoma-details-3d-button--watch" onClick={watch}><span><Play size={18} fill="currentColor" /> {watchLabel}</span></button>
+              <button ref={watchButtonRef} className="kinoma-details-3d-button kinoma-details-3d-button--watch" onClick={watch}><span><Play size={18} fill="currentColor" /> {watchLabel}</span></button>
               <button className={'kinoma-details-3d-button kinoma-details-3d-button--list ' + (isInList ? 'is-added' : '')} onClick={toggleList}><span>{isInList ? <Check size={18} /> : <Plus size={18} />} {isInList ? 'In My List' : 'Add to My List'}</span></button>
               <button className="kinoma-details-share" type="button" onClick={share} aria-label="Share this title"><span><Share2 className="kinoma-details-share__icon" size={16} /> Share</span></button>
             </div>
