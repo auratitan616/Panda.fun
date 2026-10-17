@@ -36,6 +36,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    box-sizing: border-box;
     height: calc(56px + env(safe-area-inset-top, 0px));
     min-height: calc(56px + env(safe-area-inset-top, 0px));
     padding: env(safe-area-inset-top, 0px) 16px 0;
