@@ -6,7 +6,7 @@ import { KinomaLogo } from './ui/KinomaLogo';
 export const ITEMS = [
   { href: '/home', label: 'Home', Icon: House },
   { href: '/search', label: 'Search', Icon: Search },
-  { href: '/library', label: 'Library', Icon: Library },
+  { href: '/library', label: 'My List', Icon: Library },
   { href: '/settings', label: 'Settings', Icon: Settings },
 ];
 
@@ -39,11 +39,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
               key={href}
               href={href}
               className={`panda-mobile-bottom-nav__item ${active ? 'is-active' : ''}`}
-              aria-label={label}
+              aria-label={mobileLabel}
               aria-current={active ? 'page' : undefined}
             >
               <span className="panda-mobile-bottom-nav__icon"><Icon size={21} strokeWidth={1.9} /></span>
-              <span className="panda-mobile-bottom-nav__label">{label}</span>
+              <span className="panda-mobile-bottom-nav__label">{mobileLabel}</span>
             </Link>
           );
         })}
