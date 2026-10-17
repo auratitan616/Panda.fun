@@ -323,7 +323,39 @@ export function Home() {
         <span className="kinoma-home__ambient-orb kinoma-home__ambient-orb--two" />
       </div>
       <div className="kinoma-home__inner">
-        {/* PRESERVED HERO/TRAILER — intentionally unchanged */}
+        {/* Mobile-only cinematic card carousel. Desktop hero and playback flow remain unchanged. */}
+        <section className="panda-mobile-featured" aria-label="Featured movies and series">
+          <div className="panda-mobile-featured__heading">
+            <span>MADE FOR MOVIE NIGHTS</span>
+            <h1>Find your next favourite.</h1>
+          </div>
+          <div className="panda-mobile-featured__track" tabIndex={0} aria-label="Swipe through featured titles">
+            {[...(featured ? [featured] : []), ...trending, ...popularMovies]
+              .filter((item, index, all) => all.findIndex(candidate => candidate.id === item.id) === index)
+              .slice(0, 9)
+              .map((item, index) => (
+                <Link
+                  key={item.id}
+                  href={buildDetailsHref(item, item.type === 'movie' ? 'movie' : 'series')}
+                  className={`panda-mobile-featured__card${index === 1 ? ' is-neighbour' : ''}`}
+                  aria-label={`View ${item.title}`}
+                  onClick={() => trackGAEvent('select_content', { content_type: item.type === 'movie' ? 'movie' : 'series', item_id: item.id, section: 'mobile_featured', title: item.title })}
+                >
+                  {(item.backdrop || item.poster) ? (
+                    <img src={optimizeImageUrl((item.backdrop || item.poster) as string, 'w500') || (item.backdrop || item.poster) as string} alt="" loading={index < 3 ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer" />
+                  ) : <span className="panda-mobile-featured__art-empty" aria-hidden="true" />}
+                  <span className="panda-mobile-featured__shade" />
+                  <span className="panda-mobile-featured__info">
+                    <small>{item.type === 'movie' ? 'MOVIE' : 'SERIES'}{item.year ? ` · ${item.year}` : ''}</small>
+                    <strong>{item.title}</strong>
+                    <span className="panda-mobile-featured__cta"><Play size={14} fill="currentColor" /> Explore title</span>
+                  </span>
+                </Link>
+              ))}
+          </div>
+          <p className="panda-mobile-featured__hint">Swipe to explore <span aria-hidden="true">⟶</span></p>
+        </section>
+        {/* PRESERVED DESKTOP HERO/TRAILER — existing trailer playback logic untouched */}
         <section className="kinoma-home-hero kinoma-home-hero--trailer" aria-labelledby="kinoma-home-title">
           <div className="kinoma-home-hero__trailer-bg" aria-label={featured?.title ? featured.title + ' trailer' : 'Featured trailer'}>
             {featured?.backdrop && <img src={featured.backdrop} alt="" className="kinoma-home-hero__banner-image kinoma-home-hero__banner-image--underlay" loading="eager" fetchPriority="high" decoding="async" />}
