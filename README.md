@@ -1,516 +1,657 @@
-# 🐼 Panda.fun
+<div align="center">
 
-Panda.fun is a responsive movie and TV streaming web application, previously known as **Kinoma**. It combines a Panda-themed streaming interface with a dedicated MovieAPI backend, local-first playback/library state, optional Firebase account sync, PWA support, and a native Android TV application.
+PANDA.FUN
 
-> **Status:** Active development. The UI and playback system are still being refined, so implementation details may change.
+Movie and TV discovery, built for the modern web.
 
-## ✨ What Panda.fun Does
+<br>
 
-Panda.fun is designed around a simple flow:
+<br /><br />\
 
-```
-Visitor
-  ↓
-Landing page
-  ↓
+<br />\
+
+<br>
+
+<img src=""https://skillicons.dev/icons?i=react,ts,vite,tailwind,express,firebase,kotlin,androidstudio&perline=8" (https://skillicons.dev/icons?i=react,ts,vite,tailwind,express,firebase,kotlin,androidstudio&perline=8)" alt="Panda.fun technology stack">
+
+<br><br>
+
+Discover. Search. Watch. Continue.
+
+</div>
+
+---
+
+Introduction
+
+Panda.fun, formerly Kinoma, is a responsive movie and TV discovery and playback application with a Panda-themed interface.
+
+It uses the separate "MovieAPI" (https://github.com/titan717/movieapi) backend for catalog data, metadata, search, trailers, and playback URL resolution. Optional Firebase accounts provide synchronization for libraries and watch progress, while PWA support and a native Android TV application extend the experience across devices.
+
+«Status: Active development. Some internals still use the old "Kinoma" name for compatibility, including storage keys, component names, and Android package paths.»
+
+Panda.fun does not host video files. It displays catalog data from MovieAPI and loads the configured external embed player inside an iframe.
+
+---
+
+Key Features
+
+Discovery
+
+- Trending and popular content
+- Movie and TV search
+- Title details and similar titles
+- Trailer support
+- Season and episode information
+
+Playback
+
+- Movie and TV playback
+- Season and episode selection
+- Previous and next episode controls
+- Automatic next episode
+- External iframe player
+
+Accounts and personalization
+
+- Optional Google and email/password authentication
+- Local-first user state
+- Firestore synchronization
+- My List
+- Watch history and progress
+- User preferences
+- Analytics events
+
+Web and Android TV
+
+- Responsive mobile, tablet, and desktop UI
+- PWA support and service worker caching
+- Native Android TV application
+- Kotlin, Jetpack Compose, Media3, and ExoPlayer
+
+---
+
+Prerequisites
+
+- Node.js 20 or newer
+- npm
+- A Firebase project if authentication or Firestore synchronization is required
+- Access to a MovieAPI deployment
+
+---
+
+Setup
+
+Clone the repository and install dependencies:
+
+git clone https://github.com/titan717/Panda.fun.git
+cd Panda.fun
+npm install
+
+Create a local environment file:
+
+cp .env.example .env
+
+Edit ".env" with the required values, then start the development server:
+
+npm run dev
+
+Open the application at:
+
+http://localhost:3000
+
+---
+
+Configuration
+
+Environment variables
+
+Variable| Required| Description
+"VITE_MOVIE_API_URL"| Yes| MovieAPI base URL
+"VITE_MOVIE_API_FALLBACK_URL"| No| Backup API origin
+
+Example:
+
+VITE_MOVIE_API_URL=https://movieapi-3d0v.onrender.com
+VITE_MOVIE_API_FALLBACK_URL=
+
+The fallback API origin must also be added to "connect-src" in "vercel.json".
+
+Firebase settings are stored in:
+
+firebase-applet-config.json
+
+«[!WARNING]
+Never put TMDB tokens, provider credentials, or admin secrets in the frontend. Everything prefixed with "VITE_" is public in the built JavaScript.»
+
+Media IDs
+
+Format| Meaning
+"tmdb_movie_<id>"| TMDB movie
+"tmdb_tv_<id>"| TMDB TV show
+"kinoma_tvmaze_<id>"| TVmaze show
+
+TVmaze shows can be resolved to a TMDB ID when playback or trailer information requires one.
+
+Routes
+
+Route| Purpose
+"/"| Landing page
+"/home"| Main browsing experience
+"/browse"| Main browsing experience
+"/search"| Movie and TV search
+"/details/:id"| Title details
+"/watch/:id"| Player
+"/library"| My List
+"/history"| Watch history
+"/profile"| Account
+"/settings"| Preferences
+"/whats-new"| What's new
+"/about"| Information
+"/docs"| Documentation
+"/terms"| Terms
+"/privacy"| Privacy
+"/contact"| Support
+"/admin"| Admin dashboard
+
+Unknown routes display the 404 state.
+
+---
+
+Development Commands
+
+Command| What it does
+"npm run dev"| Starts the Express and Vite development server
+"npm run build"| Builds the Vite frontend and server bundle
+"npm start"| Runs the production server
+"npm run preview"| Previews the Vite build
+"npm run lint"| Runs TypeScript checks with "tsc --noEmit"
+"npm test"| Runs Vitest
+
+Build and run the production server locally:
+
+npm run build
+node dist/server.cjs
+
+---
+
+Architecture
+
+System overview
+
+flowchart LR
+
+    A["Panda.fun<br/>React + Vite"] --> B["MovieAPI<br/>Hono + Zod"]
+
+    B --> C["TMDB"]
+    B --> D["TVmaze"]
+
+    A --> E["Firebase Auth"]
+    A --> F["Firestore"]
+
+    A --> G["External Embed<br/>Vidy.st"]
+
+    G --> H["Video Playback"]
+
+    style A fill:#111827,color:#fff,stroke:#374151
+    style B fill:#111827,color:#fff,stroke:#374151
+    style E fill:#111827,color:#fff,stroke:#374151
+    style F fill:#111827,color:#fff,stroke:#374151
+    style G fill:#111827,color:#fff,stroke:#374151
+
+Application flow
+
+Browser
+   |
+   +--------------------+
+   |                    |
+   v                    v
+Panda.fun           Firebase
+React + Vite        Auth / Firestore
+   |
+   v
+MovieAPI
+   |
+   +--------> TMDB
+   |
+   +--------> TVmaze
+   |
+   v
+Playback URL
+   |
+   v
+External Embed Player
+
+User flow
+
+Landing
+   |
+   v
 Browse / Search
-  ↓
-Title details
-  ↓
+   |
+   v
+Title Details
+   |
+   v
 Watch
-  ↓
-Continue watching / My List
-```
+   |
+   +----> Continue Watching
+   |
+   +----> My List
 
-The application does not store the movie or TV video files itself. It retrieves catalog and playback information through the project's MovieAPI and loads the configured external playback embed.
+Technology stack
 
----
+Layer| Technology
+Frontend| React 19, TypeScript, Vite 6
+Styling| Tailwind CSS 4
+Routing| wouter
+Data fetching| SWR
+Animation| motion
+Icons| lucide-react
+Media| hls.js
+Virtualization| react-window
+Local storage| idb-keyval
+Server| Express
+Backend API| MovieAPI — Hono + Zod
+Metadata| TMDB + TVmaze
+Accounts| Firebase Auth + Firestore
+PWA| vite-plugin-pwa
+Android TV| Kotlin + Jetpack Compose
+TV playback| Media3 / ExoPlayer
+Hosting| Vercel / Render
 
-## 🏗️ Architecture
+Project structure
 
-```
-┌──────────────────────────────────────────────┐
-│                 Panda.fun Web                │
-│              React + TypeScript              │
-├──────────────────────────────────────────────┤
-│                                              │
-│  Landing → Home → Search → Details → Watch  │
-│                         │            │        │
-│                         │            └───────┼── Vidy.st
-│                         │                    │   └─ CineSrc default
-│                         │                    │
-│                         └── MovieAPI ────────┘
-│                              │               │
-│                              ├── TMDB        │
-│                              ├── TVMaze      │
-│                              └── cached data │
-│                                              │
-├──────────────────────────────────────────────┤
-│ Firebase                                     │
-│ Auth + Firestore account/progress sync       │
-├──────────────────────────────────────────────┤
-│ PWA / Service Worker                         │
-├──────────────────────────────────────────────┤
-│ Native Android TV                            │
-│ Jetpack Compose + Media3 / ExoPlayer         │
-└──────────────────────────────────────────────┘
-```
-
-### Frontend
-
-The web application is a Vite-powered React 19 application written in TypeScript.
-
-Important areas:
-
-- `src/App.tsx` — application shell and routing
-- `src/components/Layout.tsx` — Panda sidebar/navigation
-- `src/pages/` — application screens
-- `src/components/ui/` — reusable UI components
-- `src/lib/api.ts` — MovieAPI client, caching and playback URL resolution
-- `src/lib/history.ts` — watch history and episode progress
-- `src/lib/library.ts` — My List/library state and sync
-- `src/lib/preferences.ts` — search, personalization and player preferences
-- `src/lib/AuthContext.tsx` — Firebase authentication/session state
-- `src/lib/analytics.ts` — application analytics events
-- `src/styles/panda-home.css` — Panda streaming UI styling
-
----
-
-## 🧭 Application Routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Landing page |
-| `/home` | Main Panda.fun browsing experience |
-| `/browse` | Browse/home alias |
-| `/search` | Movie and TV search |
-| `/details/:id` | Movie or TV title details |
-| `/watch/:id` | Playback page |
-| `/library` | My List / saved titles |
-| `/history` | Library/history view |
-| `/profile` | User profile |
-| `/settings` | Application settings |
-| `/whats-new` | What's new |
-| `/about` | About Panda.fun |
-| `/docs` | API documentation information |
-| `/terms` | Terms of Service |
-| `/privacy` | Privacy Policy |
-| `/contact` | Contact/support |
-| `/admin` | Admin dashboard |
-
-Unknown routes are handled by the application's 404 state.
+Panda.fun/
+│
+├── android/
+│   └── Native Android TV app
+│
+├── docs/
+│   └── Project documentation
+│
+├── public/
+│   ├── icons
+│   └── downloads
+│
+├── src/
+│   ├── components/
+│   │   └── Shared UI
+│   │
+│   ├── lib/
+│   │   ├── api.ts
+│   │   ├── history.ts
+│   │   ├── library.ts
+│   │   ├── preferences.ts
+│   │   ├── AuthContext.tsx
+│   │   └── analytics.ts
+│   │
+│   ├── pages/
+│   │   └── Route screens
+│   │
+│   ├── services/
+│   │   └── Supporting services
+│   │
+│   ├── styles/
+│   │   └── panda-home.css
+│   │
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── types.ts
+│
+├── update/
+│   └── latest.json
+│
+├── server.ts
+├── firestore.rules
+├── vercel.json
+├── render.yaml
+└── vite.config.ts
 
 ---
 
-## 🎬 How Browsing Works
+Playback and Data Behavior
 
-### Home
+Playback currently uses Vidy.st as the configured embed provider.
 
-The home experience consumes the MovieAPI home endpoint and presents the catalog through Panda.fun's streaming interface.
+Movies
 
-The API currently exposes data for:
+TMDB movie ID
+      |
+      v
+Vidy.st embed
+      |
+      v
+Playback
 
-- Featured content
-- Trending
-- Popular movies
-- Popular TV
-- Latest movies
-- Latest TV
-- Airing/schedule information
-- Genre-based discovery
-- Recommendations
+TV
 
-The UI is intentionally image-heavy and responsive, with a cinematic hero, content rows, cards, continue-watching state and title discovery.
-
-### Search
-
-Search queries are sent to MovieAPI for both movies and TV shows. The frontend combines the two result sets into a single searchable catalog.
-
-Search results use normalized Panda.fun media IDs such as:
-
-```
-tmdb_movie_<tmdbId>
-tmdb_tv_<tmdbId>
-kinoma_tvmaze_<tvmazeId>
-```
-
-These IDs allow the frontend to work with both TMDB-backed and TVMaze-backed titles.
-
----
-
-## 🎞️ Title Details
-
-The details page resolves the selected media ID through MovieAPI.
-
-For TV shows it can load:
-
-1. Show metadata
-2. Seasons
-3. Episodes for a selected season
-4. Trailer information
-5. Recommendations
-
-Movie titles use the corresponding movie metadata and recommendation flow.
-
-TVMaze IDs can be resolved to TMDB IDs when a TMDB-only operation, such as trailer/playback resolution, requires one.
-
----
-
-## ▶️ Playback
-
-The current web player architecture uses **Vidy.st as the sole playback provider**.
-
-For the current configuration:
-
-```
-Panda.fun
-   ↓
-Vidy.st
-   ↓
-TMDB-powered movie / TV playback
-```
-
-The frontend generates Vidy.st playback URLs with `autoplay=true`. TV playback also enables `nextEpisode=true`, `episodeSelector=true`, and `autoplayNextEpisode=true`.
-
-### Movies
-
-Movie playback is resolved using the TMDB movie ID.
-
-### TV
-
-TV playback uses:
-
-```
 TMDB ID
+   +
 Season
+   +
 Episode
-```
+   |
+   v
+Vidy.st embed
+   |
+   v
+Playback
 
-The player page keeps the selected season and episode in the route so that episodes can be opened directly and navigation can move between episodes.
+The player URL uses:
 
-The player page also provides:
+autoplay=true
 
-- Previous/next episode navigation
-- Season selection
-- Episode cards
-- Current episode indication
-- My List controls
-- Native device sharing
-- Similar/recommended titles
-- Responsive player layout
-- Vidy.st fallback/error states
+TV playback additionally supports:
 
-### Important playback note
+nextEpisode
+episodeSelector
+autoplayNextEpisode
 
-The video itself is provided by the configured external embed provider. Panda.fun controls the surrounding application experience but does not host the video files.
+The player page provides previous and next episode controls, a season picker, episode cards, My List, native sharing, and similar titles.
 
-Browser autoplay policies and third-party embed behavior can still affect playback.
+Because the iframe is cross-origin, Panda.fun cannot read the exact playback position directly. Resume data depends on information the application can record itself. Autoplay also depends on browser policies and the external embed provider.
 
----
+If another provider is added, update "frame-src" and "Permissions-Policy" in "vercel.json".
 
-## 📺 Continue Watching
+Accounts, library, and history
 
-Panda.fun maintains playback/history information locally so the interface can restore the user's viewing state.
+Firebase authentication is optional. Browsing works without an account.
 
-Progress can include:
+Supported authentication:
 
-- Title ID
-- Season
-- Episode
-- Playback timestamp
-- Duration
-- Completion percentage
-- Last watched time
-- Completion state
+Google
+Email / Password
 
-For authenticated users, progress can also be synchronized with Firebase Firestore.
+My List and watch progress are stored locally first and synchronized to Firestore when the user is signed in.
 
-Because the web player is a cross-origin external iframe, the frontend cannot assume it can directly inspect the embedded player's exact playback position. Resume information therefore depends on the progress data available to the application.
+users/
+└── {uid}/
+    ├── progress/
+    │   └── {id}
+    │
+    └── library/
+        └── {id}
 
----
+Analytics events can include page views, searches, watch start, watch progress, watch completion, library actions, and errors. Analytics must never block navigation or playback.
 
-## 📚 My List
+Performance
 
-My List is the user's saved-title collection.
-
-The library system supports:
-
-- Add/remove titles
-- Local persistence
-- Library UI updates
-- Firebase synchronization for authenticated users
-
-The same library state is used by title and player actions where appropriate.
-
----
-
-## 👤 Accounts
-
-Firebase Authentication is used for optional user accounts.
-
-Supported authentication flows include:
-
-- Google sign-in
-- Email/password sign-in
-- Email/password registration
-- Sign-out
-
-When a user signs in, Panda.fun can synchronize account information, watch progress and library data with Firestore.
-
-Anonymous browsing remains possible for the core catalog experience.
-
----
-
-## 📊 Analytics
-
-Panda.fun has an application analytics layer backed by Firestore.
-
-Tracked application events include:
-
-- Page views
-- Watch starts
-- Watch progress
-- Watch completion
-- Searches
-- Title opens
-- Episode starts
-- Library actions
-- Errors
-
-Analytics are designed to be non-blocking: an analytics failure should not prevent normal navigation or playback.
-
----
-
-## 💾 Caching and Performance
-
-The MovieAPI client includes:
+Panda.fun includes:
 
 - In-memory GET caching
+- TTL-based caching
 - Request de-duplication
-- Time-based cache TTLs
-- API fallback handling
 - Request timeouts
 - Background recommendation loading
 - Route-level code splitting
-- Lazy loading for larger pages
-- PWA/service-worker support
+- Lazy-loaded pages
+- PWA caching
+- Long-lived immutable asset caching
 
-The player page prioritizes loading the selected playback iframe quickly while secondary information can load independently.
-
----
-
-## 📱 PWA
-
-Panda.fun can operate as a Progressive Web App.
-
-The project includes:
-
-- Web app manifest
-- Service worker
-- Install prompt handling
-- Standalone/fullscreen detection
-- Android/iOS device detection
-- Cached application assets
-
-The responsive web interface is intentionally shared across desktop, mobile and TV-sized screens rather than switching to the old separate TV web UI.
+Further recommendations are documented in "AUDIT.md".
 
 ---
 
-## 📺 Native Android TV
+Deployment
 
-The repository also contains a native Android TV application under `/android`.
+Panda.fun supports Render or another Node host for the complete Express feature set, and Vercel for a static SPA deployment.
 
-It uses:
+Render or Node host
 
-- Kotlin
-- Jetpack Compose
-- Media3 / ExoPlayer
-- Android TV / Leanback launcher support
-- D-pad navigation
-- Native TV playback
-- Update checking
+Use this deployment shape when you need SEO metadata, "sitemap.xml", "robots.txt", legacy API proxy routes, Android update routes, APK downloads, and the Express server.
 
-Build instructions are maintained separately in:
+Build:
 
-```
-android/README.md
-```
+npm install && npm run build
 
-The native Android TV infrastructure is part of the project and should not be removed when changing the web interface.
+Start:
 
----
+node dist/server.cjs
 
-## 🔧 Environment Variables
+Set:
 
-Create a local `.env` file based on `.env.example`.
+NODE_ENV=production
 
-The primary public MovieAPI endpoint is:
+When running behind a proxy such as Render or Fly:
 
-```
-VITE_MOVIE_API_URL=https://movieapi-3d0v.onrender.com
-```
+app.set('trust proxy', true)
 
-A secondary endpoint can be supplied through:
+This ensures canonical and Open Graph URLs use HTTPS correctly.
 
-```
-VITE_MOVIE_API_FALLBACK_URL=
-```
+Vercel
 
-Firebase configuration is supplied through the Firebase configuration used by `src/lib/firebase.ts`.
+Vercel uses "vercel.json" for security headers, cache headers, and SPA rewrites.
 
-**Never place private TMDB/provider credentials in the frontend.** Provider secrets belong in the MovieAPI backend.
+«[!NOTE]
+"server.ts" does not run on a pure Vercel static deployment.»
 
----
+The following features are unavailable in that deployment shape:
 
-## 🛠️ Local Development
+Per-title SEO injection
+Dynamic sitemap
+/api/* proxy routes
+Android update routes
+APK route
 
-### Requirements
+Configure the "VITE_*" variables and add the production domain to Firebase Authorized Domains.
 
-- Node.js
-- npm
-- A configured Firebase project if account functionality is required
-- Access to a working MovieAPI deployment for catalog/playback data
+Keep these values synchronized:
 
-### Install
+connect-src
+frame-src
+MovieAPI origin
+Player origin
 
-```bash
-npm install
-```
+Server routes
 
-### Development server
+These routes exist when the Express server is running locally or on a Node host such as Render. They are not available on a pure Vercel static deployment.
 
-```bash
-npm run dev
-```
-
-### Type checking
-
-```bash
-npm run lint
-```
-
-### Tests
-
-```bash
-npm test
-```
-
-### Production build
-
-```bash
-npm run build
-```
-
-### Preview the Vite build
-
-```bash
-npm run preview
-```
+Route| Behaviour
+"GET /robots.txt"| Allows crawling and disallows private routes
+"GET /sitemap.xml"| Built from MovieAPI trending and popular lists
+"GET /details/*"| SEO-enabled title page
+"GET /watch/*"| SEO-enabled watch page
+"GET /api/health"| API health
+"GET /api/search"| Search proxy
+"GET /api/trending"| Trending proxy
+"GET /api/popular"| Popular proxy
+"GET /api/info/:id"| Title information
+"GET /api/episodes/:id"| Episode information
+"GET /api/servers/:id/:ep"| Playback servers
+"GET /api/stream/:id/:ep"| Stream resolution
+"GET /api/schedule"| Schedule
+"GET /tv/update.json"| Android TV update manifest
+"GET /update/latest.json"| Android update metadata
+"GET /downloads/Panda.fun.apk"| APK download
 
 ---
 
-## 🚀 Deployment
+Troubleshooting
 
-The project is designed for Vercel deployment.
+<details>
+<summary><strong>First load takes 30–60 seconds</strong></summary>
 
-The frontend is a client-side React application with Vite build output and SPA rewrites configured in `vercel.json`.
+The free Render API instance may have gone to sleep, producing a cold start.
 
-Important deployment requirements:
+Consider using an uptime pinger or a hosting provider without automatic spin-down.
 
-1. Configure the required Vite environment variables.
-2. Configure Firebase for the production domain.
-3. Ensure the MovieAPI endpoint is reachable from the deployed site.
-4. Keep the CSP/frame configuration aligned with the active playback embed provider.
-5. Deploy the frontend after successful type checking/build verification.
+</details>
 
----
+<details>
+<summary><strong>Player is blank</strong></summary>
 
-## 🔌 MovieAPI
+The external player may be blocked by the Content Security Policy.
 
-Panda.fun's web frontend is intentionally separated from the MovieAPI backend.
+Check:
 
-Backend repository:
+frame-src
+Permissions-Policy
 
-**MovieAPI:** https://github.com/titan717/movieapi
+Also verify that the external provider is operational.
 
-Current deployment:
+</details>
 
-**MovieAPI Render:** https://movieapi-3d0v.onrender.com
+<details>
+<summary><strong>API calls fail only in production</strong></summary>
 
-The frontend should treat MovieAPI as its catalog, metadata, discovery, trailer and playback-resolution layer rather than directly embedding provider credentials or backend secrets.
+Check "connect-src" in "vercel.json".
 
----
+The MovieAPI origin must be permitted by the production CSP.
 
-## 🗂️ Project Structure
+</details>
 
-```
-Panda.fun/
-├── android/                 # Native Android TV application
-├── docs/                    # Project plans and documentation
-├── public/                  # Static web assets
-├── src/
-│   ├── components/          # Shared React components
-│   ├── lib/                 # API, auth, cache, library, history, preferences
-│   ├── pages/               # Application routes/screens
-│   ├── services/            # Supporting services
-│   ├── styles/              # Panda-specific styling
-│   ├── App.tsx              # Router/application shell
-│   ├── main.tsx             # Browser entry point
-│   └── types.ts             # Shared TypeScript types
-├── update/                  # Native app update metadata
-├── .env.example             # Environment variable template
-├── package.json             # Web dependencies/scripts
-├── vercel.json              # Vercel/CSP/SPA configuration
-├── vite.config.ts           # Vite configuration
-└── README.md
-```
+<details>
+<summary><strong>Firebase sign-in popup fails</strong></summary>
 
----
+Check Firebase Authorized Domains.
 
-## 🎨 Design Principles
+The production domain must be registered there.
 
-Panda.fun is being built around a few core principles:
+</details>
 
-- **Panda first:** warm, relaxed, distinctive visual identity.
-- **Streaming first:** content should remain the focus instead of looking like an admin dashboard.
-- **Minimal UI:** controls should appear when useful and stay out of the way.
-- **Responsive everywhere:** desktop, mobile and TV-sized screens use the same core web experience.
-- **Fast navigation:** cache aggressively where safe and avoid blocking the main experience on secondary requests.
-- **Graceful failure:** API/provider failures should produce useful UI states instead of breaking the entire application.
-- **Accessible interaction:** keyboard, pointer, touch and TV/D-pad-friendly patterns should be considered.
-- **Modular architecture:** catalog, playback, authentication, storage and UI concerns remain separable.
+<details>
+<summary><strong>Analytics or admin pages show nothing</strong></summary>
+
+Check Firestore security rules and the browser console.
+
+A common error is:
+
+permission-denied
+
+</details>
+
+<details>
+<summary><strong>Share previews show HTTP URLs</strong></summary>
+
+If Express is behind a reverse proxy, configure:
+
+app.set('trust proxy', true)
+
+This allows the server to correctly determine the original HTTPS protocol.
+
+</details>
 
 ---
 
-## 🧪 Current Development Notes
+Security Checklist
 
-Panda.fun is still under active development.
+- [ ] Restrict Firebase API key by HTTP referrer
+- [ ] Enable Firebase App Check
+- [ ] Remove open Firestore rules
+- [ ] Secure analytics collections
+- [ ] Secure admin collections
+- [ ] Restrict CSP origins
+- [ ] Keep secrets out of "VITE_*"
+- [ ] Sign Android APKs
+- [ ] Publish a real SHA-256 checksum in "update/latest.json"
 
-Some parts of the repository retain historical **Kinoma** names for compatibility, including internal storage keys, component names and Android package paths. These do not change the public Panda.fun identity.
-
-The onboarding/Panda Lounge experience is being kept isolated while the core streaming product is stabilized.
-
-Anime integration is currently not part of the primary MovieAPI playback flow and can be reintroduced later without changing the core movie/TV architecture.
+«[!IMPORTANT]
+Only allow script, style, connection, and frame origins that you actually control or trust.»
 
 ---
 
-## 🤝 Contributing
+Contributing
 
-Before making changes:
-
-1. Understand whether the change belongs in Panda.fun or MovieAPI.
-2. Keep playback-provider logic isolated from presentation code.
+1. Decide whether the change belongs in Panda.fun or MovieAPI.
+2. Keep playback-provider logic separate from UI code.
 3. Preserve responsive behavior.
-4. Avoid exposing provider/API secrets in the frontend.
-5. Run type checking and tests before considering a change ready.
-6. Keep commits focused so individual features can be reverted safely.
+4. Preserve D-pad and keyboard behavior.
+5. Never expose secrets in the frontend.
+6. Run "npm run lint".
+7. Run "npm test".
+8. Keep commits small and reversible.
+
+Roadmap
+
+1. Security
+
+- Fix audit findings
+- Harden Firebase rules
+- Enable App Check
+- Improve CSP
+
+2. Playback
+
+- Multiple playback servers
+- Automatic fallback
+- Report broken link
+- Better playback recovery
+
+3. Notifications
+
+- Next-episode notifications
+- PWA push notifications
+- Airing schedule integration
+
+4. Profiles
+
+- Multiple profiles
+- Per-profile history
+- Profile-specific libraries
+
+5. Discovery
+
+- Actor pages
+- Cast pages
+- “Because you watched...” rows
+
+6. Preferences
+
+- Subtitle preferences
+- Language preferences
+
+7. Testing
+
+- Vitest tests
+- Playwright tests
+- CI on every pull request
 
 ---
 
-## 📄 License
+Content and Legal Notice
 
-No open-source license has currently been declared for this repository. Unless a license is added, the repository should not be assumed to grant permission to redistribute or reuse the source code.
+Panda.fun is a frontend application that displays metadata and embeds players provided by third parties. It does not host or upload video.
+
+Content availability and licensing are the responsibility of the relevant providers.
+
+If you operate this project publicly, provide a clear:
+
+Takedown process
+Contact process
+Terms of Service
+Privacy Policy
+
+Make sure you have the appropriate rights or lawful basis for content you link to.
 
 ---
 
-**Panda.fun 🐼 — find something good, press play, and relax.**
+License
+
+No license has currently been declared.
+
+Without an explicit license, others do not automatically receive permission to reuse or redistribute the code.
+
+If you want Panda.fun to be open source, consider adding an appropriate license such as MIT.
+
+---
+
+<div align="center">
+
+PANDA.FUN
+
+Find something good. Press play. Relax.
+
+<br>
+
+<br />\
+
+<br>
+
+<img src=""https://skillicons.dev/icons?i=react,ts,vite,tailwind,firebase,kotlin&perline=6" (https://skillicons.dev/icons?i=react,ts,vite,tailwind,firebase,kotlin&perline=6)" alt="Panda.fun stack">
+
+<br><br>
+
+<sub>Formerly Kinoma · Active development</sub>
+
+</div>
